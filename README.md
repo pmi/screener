@@ -14,14 +14,16 @@ A single-file, browser-based stock screener for quality-at-a-discount investing.
 
 ## Usage
 
-1. Open `screener.html` in any modern browser.
-2. (Optional) Paste an [Alpha Vantage API key](https://www.alphavantage.co/support/#api-key) in the Setup tab to auto-fetch financials by ticker. Without a key, you can still enter inputs manually.
-3. Pick a School and Profile.
-4. Walk through the tabs and review the Summary and Portfolio verdicts.
+1. Get a free [Alpha Vantage API key](https://www.alphavantage.co/support/#api-key) — required to fetch fundamentals and price history.
+2. Open `screener.html` in any modern browser.
+3. Paste your API key in the Setup tab.
+4. Pick a School and Profile.
+5. Walk through the tabs and review the Summary and Portfolio verdicts.
 
 ## Data sources
 
-- [Alpha Vantage](https://www.alphavantage.co/) — optional, for automated fundamentals and price history. A free key is sufficient for casual use.
+- [Alpha Vantage](https://www.alphavantage.co/) — required, for fundamentals and price history.
+  A [free key](https://www.alphavantage.co/support/#api-key) is sufficient for casual use.
 
 ## Development
 
