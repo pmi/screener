@@ -301,8 +301,8 @@ const METRIC_DEFINITIONS = {
     auditor_chg: 'Auditor change in the last 2 years (Y/N). Unexplained auditor changes sometimes precede accounting disputes.',
     restate: 'Financial restatement in the last 3 years (Y/N). Restatements signal prior-year earnings were not reliable.',
 
-    mom12_1: '12–1 month price momentum — the 12-month total return excluding the most recent month. The academic momentum factor. Skipping the last month avoids 1-month reversal noise. Auto-computed from daily prices.',
-    mom6m: '6-month price return — recent trend strength. Used to confirm intermediate-term momentum.',
+    mom12_1: '12–1 month price momentum — the 12-month total return excluding the most recent month. The academic momentum factor. Skipping the last month avoids 1-month reversal noise. Enter manually (AV historical-price endpoint is premium-only).',
+    mom6m: '6-month price return — recent trend strength. Used to confirm intermediate-term momentum. Enter manually (AV historical-price endpoint is premium-only).',
     dist_52wh: 'Distance from 52-week high (negative %). How far below the recent peak the stock is trading. Closer to 0 = stronger; below −20% = downtrend.',
     above_200dma: 'Above 200-day moving average (1 = yes, 0 = no). The primary long-term trend filter — institutions watch this religiously.',
     rs_index: 'Relative strength vs benchmark (6-month outperformance %). Stock return minus benchmark return. Positive = beating the market.',
@@ -598,6 +598,7 @@ const GENERIC_DEFAULTS = {
     beneish: -2.0, accruals: 2.0, dso: 5,
     topcust: 5, insider: 0, short: 5, mgmt_own: 1, turnover: 0,
     acq_fcf: 10, auditor_chg: 'N', restate: 'N',
-    // Momentum defaults set to neutral: rs_index and eps_rev aren't fetched from AV.
-    rs_index: 0, eps_rev: 0,
+    // Momentum defaults set to neutral. mom12_1 and mom6m need historical daily prices (premium-only on AV);
+    // rs_index and eps_rev aren't on AV at all. Enter manually if your school uses Momentum.
+    mom12_1: 0, mom6m: 0, rs_index: 0, eps_rev: 0
 };

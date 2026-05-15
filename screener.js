@@ -61,82 +61,26 @@ async function _avCall(fn, symbol, key) {
     return j;
 }
 
-async function _avDaily(symbol, key) {
-    const since = Date.now() - _avLastCallAt;
-    if (since < AV_MIN_GAP_MS) {
-        await _avSleep(AV_MIN_GAP_MS - since);
-    }
-    _avLastCallAt = Date.now();
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(
-        symbol)}&outputsize=full&apikey=${encodeURIComponent(key)}`;
-    const r = await fetch(url);
-    if (!r.ok) {
-        throw new Error(`HTTP ${r.status} on TIME_SERIES_DAILY`);
-    }
-    const j = await r.json();
-    if (j.Note) {
-        throw new Error('AV rate limit on TIME_SERIES_DAILY. ' + String(j.Note).slice(0, 200));
-    }
-    if (j.Information) {
-        throw new Error('AV: ' + String(j.Information).slice(0, 240));
-    }
-    if (j['Error Message']) {
-        throw new Error('AV: ' + String(j['Error Message']).slice(0, 240));
-    }
-    return j;
-}
-
-async function fetchAlphaVantage(symbol, key, onProgress, opts) {
+async function fetchAlphaVantage(symbol, key, onProgress) {
     const fns = ['OVERVIEW', 'INCOME_STATEMENT', 'BALANCE_SHEET', 'CASH_FLOW', 'GLOBAL_QUOTE'];
-    const includeMomentum = !!(opts && opts.includeMomentum);
-    const total = fns.length + (includeMomentum ? 1 : 0);
     const out = [];
     for (let i = 0; i < fns.length; i++) {
         if (onProgress) {
-            onProgress(fns[i], i + 1, total);
+            onProgress(fns[i], i + 1, fns.length);
         }
         out.push(await _avCall(fns[i], symbol, key));
     }
-    let daily = null;
-    if (includeMomentum) {
-        if (onProgress) {
-            onProgress('TIME_SERIES_DAILY', total, total);
-        }
-        daily = await _avDaily(symbol, key);
-    }
-    return {ov: out[0], is: out[1], bs: out[2], cf: out[3], q: out[4], daily};
+    return {ov: out[0], is: out[1], bs: out[2], cf: out[3], q: out[4]};
 }
 
-// Parse TIME_SERIES_DAILY response into ordered price series (newest first) and compute momentum
-function computeMomentum(daily) {
-    if (!daily || !daily['Time Series (Daily)']) {
-        return null;
-    }
-    const series = daily['Time Series (Daily)'];
-    const dates = Object.keys(series).sort().reverse();  // newest first
-    if (dates.length < 252) {
-        return null;
-    }
-    const closes = dates.map(d => avNum(series[d]['4. close']));
-    const highs = dates.map(d => avNum(series[d]['2. high']) ?? avNum(series[d]['4. close']));
-
-    const today = closes[0];
-    const c1m = closes[21];   // ~21 trading days
-    const c6m = closes[126];
-    const c12m = closes[252];
-
-    const mom12_1 = (c1m && c12m) ? ((c1m / c12m) - 1) * 100 : null;
-    const mom6m = (today && c6m) ? ((today / c6m) - 1) * 100 : null;
-
-    const window52w = highs.slice(0, 252).filter(v => v !== null && v > 0);
-    const high52w = window52w.length ? Math.max(...window52w) : null;
-    const dist_52wh = (today && high52w) ? ((today / high52w) - 1) * 100 : null;
-
-    const ma200window = closes.slice(0, 200).filter(v => v !== null && v > 0);
-    const ma200 = ma200window.length === 200 ? ma200window.reduce((s, x) => s + x, 0) / 200 : null;
-    const above_200dma = (today && ma200) ? (today > ma200 ? 1 : 0) : null;
-
-    return {mom12_1, mom6m, dist_52wh, above_200dma};
+// Derive partial momentum from OVERVIEW fields (free tier).
+// 12-1m and 6m returns need a daily series — those endpoints are no longer free, so leave them for manual entry.
+function deriveMomentum(ov, price) {
+    const high52w = avNum(ov['52WeekHigh']);
+    const ma200 = avNum(ov['200DayMovingAverage']);
+    const dist_52wh = (price !== null && high52w && high52w > 0) ? ((price / high52w) - 1) * 100 : null;
+    const above_200dma = (price !== null && ma200 && ma200 > 0) ? (price > ma200 ? 1 : 0) : null;
+    return {dist_52wh, above_200dma};
 }
 
 function parseAV(symbol, data) {
@@ -273,7 +217,7 @@ function parseAV(symbol, data) {
     // IV via sector-typical PE × TTM EPS (simple anchor; user can refine)
     const iv = (epsTTM !== null && epsTTM > 0) ? epsTTM * sd.target_pe : null;
 
-    const mom = computeMomentum(data.daily);
+    const mom = deriveMomentum(ov, price);
 
     return {
         ticker: symbol.toUpperCase(),
@@ -281,10 +225,10 @@ function parseAV(symbol, data) {
         sector,
         mktcap: mktcapRaw !== null ? mktcapRaw / 1e6 : null,  // store as $M
         adv,
-        mom12_1: mom ? mom.mom12_1 : null,
-        mom6m: mom ? mom.mom6m : null,
-        dist_52wh: mom ? mom.dist_52wh : null,
-        above_200dma: mom ? mom.above_200dma : null,
+        mom12_1: GENERIC_DEFAULTS.mom12_1,
+        mom6m: GENERIC_DEFAULTS.mom6m,
+        dist_52wh: mom.dist_52wh,
+        above_200dma: mom.above_200dma,
         rs_index: GENERIC_DEFAULTS.rs_index,
         eps_rev: GENERIC_DEFAULTS.eps_rev,
         roic5y, roic_yrs,
@@ -323,7 +267,7 @@ function parseAV(symbol, data) {
 const CACHE_PREFIX = 'qvs.cache.';
 const CACHE_TTL_MS = 90 * 24 * 60 * 60 * 1000;  // 90 days
 
-async function handleFetch(symbol, key, onProgress, opts) {
+async function handleFetch(symbol, key, onProgress) {
     const sym = symbol.trim().toUpperCase();
     if (!sym) {
         throw new Error('Enter a ticker.');
@@ -331,16 +275,13 @@ async function handleFetch(symbol, key, onProgress, opts) {
     if (!key) {
         throw new Error('Set your Alpha Vantage API key first.');
     }
-    const includeMomentum = !!(opts && opts.includeMomentum);
     const cacheKey = CACHE_PREFIX + sym;
     let raw;
     try {
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const parsed = JSON.parse(cached);
-            const fresh = Date.now() - parsed.fetchedAt < CACHE_TTL_MS;
-            const hasMomentum = !!(parsed.data && parsed.data.daily);
-            if (fresh && (!includeMomentum || hasMomentum)) {
+            if (Date.now() - parsed.fetchedAt < CACHE_TTL_MS) {
                 raw = parsed.data;
             }
         }
@@ -348,7 +289,7 @@ async function handleFetch(symbol, key, onProgress, opts) {
     }
     let fromCache = !!raw;
     if (!raw) {
-        raw = await fetchAlphaVantage(sym, key, onProgress, {includeMomentum});
+        raw = await fetchAlphaVantage(sym, key, onProgress);
         try {
             localStorage.setItem(cacheKey, JSON.stringify({fetchedAt: Date.now(), data: raw}));
         } catch (e) {
@@ -760,7 +701,7 @@ async function refetchTickerSymbol(symbol, btn) {
     }
     try {
         const onProgress = (fn, n, total) => showToast(`Refetching ${sym} · ${fn} (${n}/${total})…`, 'loading');
-        const {ticker} = await handleFetch(sym, state.avKey, onProgress, {includeMomentum: schoolUses('momentum')});
+        const {ticker} = await handleFetch(sym, state.avKey, onProgress);
         const idx = state.tickers.findIndex(t => (t.ticker || '').toUpperCase() === sym);
         if (idx >= 0) {
             state.tickers[idx] = ticker;
@@ -1183,7 +1124,7 @@ function wireInputsEvents(root) {
             const onProgress = (fn, n, total) => {
                 status.textContent = `Fetching ${symbol} · ${fn} (${n}/${total})…`;
             };
-            const {ticker, fromCache} = await handleFetch(symbol, state.avKey, onProgress, {includeMomentum: schoolUses('momentum')});
+            const {ticker, fromCache} = await handleFetch(symbol, state.avKey, onProgress);
             const existing = state.tickers.findIndex(t => (t.ticker || '').toUpperCase() === symbol);
             if (existing >= 0) {
                 state.tickers[existing] = ticker;
