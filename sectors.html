@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Sector Flows</title>
+    <title>Sector Flow Timeline</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap"
@@ -11,23 +11,14 @@
     <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="sectors.css">
 </head>
-<body class="sectors-page">
+<body class="sectors-page sankey-page">
 
 <header class="app">
     <div class="brand">
-        <h1><em>Sector Snapshot</em> v1</h1>
-        <a href="sankey.html" class="header-link" title="Back to the 12-month sector timeline">← Sector screener</a>
+        <h1><em>Sector Screener</em> v1</h1>
+        <a href="stocks.html" class="header-link" title="Open the per-ticker stock screener">Stock screener →</a>
     </div>
     <div class="header-right">
-        <div class="profile-pill segmented" role="tablist" aria-label="Time window">
-            <label>Window</label>
-            <div class="segmented-buttons">
-                <button type="button" data-window="1" class="active">1M</button>
-                <button type="button" data-window="3">3M</button>
-                <button type="button" data-window="6">6M</button>
-                <button type="button" data-window="12">12M</button>
-            </div>
-        </div>
         <div class="profile-pill key-pill">
             <label><a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener"
                       title="Get a free Alpha Vantage API key">AV key</a></label>
@@ -53,13 +44,19 @@
 
 <main class="sectors-main">
     <div id="status" class="status-strip" hidden></div>
-    <div id="sectorGrid" class="sector-grid" role="region" aria-label="Sectors treemap"></div>
+    <div class="card">
+        <div class="sankey-scroller" id="sankeyScroller" role="region" aria-label="12-month sector flow timeline">
+            <div class="sankey-thead" id="sankeyThead"></div>
+            <div class="sankey-body" id="chartHost"></div>
+            <div class="sankey-tfoot" id="sankeyTfoot"></div>
+        </div>
+    </div>
 </main>
 
 <footer class="app">
     <div class="rule"></div>
-    Net buying pressure proxy · Σ(close × volume) on up months − down months · Sector ETFs via Alpha Vantage · view as <a
-        href="sankey.html">timeline</a>
+    12 monthly bars per sector · positive flow (up months) above center, negative below · same data as <a
+        href="snapshot.html">/snapshot.html</a>
 </footer>
 
 <script src="sectors.js"></script>

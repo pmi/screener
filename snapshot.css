@@ -1,0 +1,215 @@
+/* snapshot.css — treemap-specific styling. App-shell layout (incl.
+   `main.sectors-main`), status strip, key-pill, header-link, and brand-flex
+   are in common.css. */
+
+/* ---- Segmented buttons inside profile-pill (window selector) ---- */
+.profile-pill.segmented {
+  padding: 6px 6px 6px 16px;
+}
+
+.segmented-buttons {
+  display: flex;
+  gap: 2px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.segmented-buttons button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: .04em;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+
+.segmented-buttons button:hover {
+  color: var(--text);
+}
+
+.segmented-buttons button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+/* ---- Treemap grid ---- */
+.sector-grid {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.sector-grid-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+.sector-grid-empty a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+
+.sector-cell {
+  position: absolute;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  padding: clamp(8px, 1.6vmin, 18px);
+  overflow: hidden;
+  transition: background .25s ease, border-color .25s ease;
+  box-sizing: border-box;
+  container-type: size;
+  container-name: cell;
+}
+
+.sector-cell[data-flow="in"] {
+  background: var(--pass-soft);
+  border-color: var(--pass);
+}
+
+.sector-cell[data-flow="out"] {
+  background: var(--fail-soft);
+  border-color: var(--fail);
+}
+
+.sector-cell[data-flow="na"] {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.sector-cell .sector-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  flex-wrap: wrap;
+}
+
+.sector-cell .sector-name {
+  font-family: 'Fraunces', serif;
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 144;
+  font-weight: 500;
+  font-size: clamp(13px, 9cqi, 44px);
+  letter-spacing: -.01em;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.sector-cell .sector-etf {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(10px, 3.5cqi, 18px);
+  letter-spacing: .04em;
+}
+
+.sector-cell .sector-etf a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-underline);
+  padding-bottom: 1px;
+  transition: color .15s ease, border-color .15s ease;
+}
+
+.sector-cell .sector-etf a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.sector-cell .sector-mid {
+  margin-top: clamp(4px, 1.5cqi, 14px);
+}
+
+.sector-cell .sector-value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(11px, 6cqi, 30px);
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.sector-cell[data-flow="in"] .sector-value strong {
+  color: var(--pass);
+}
+
+.sector-cell[data-flow="out"] .sector-value strong {
+  color: var(--fail);
+}
+
+.sector-cell .sector-delta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(10px, 3.5cqi, 18px);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sector-cell .sector-tickers {
+  list-style: none;
+  margin-top: auto;
+  padding: clamp(6px, 1.8cqi, 14px) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(4px, 1.2cqi, 10px) clamp(8px, 2.4cqi, 18px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(10px, 3.5cqi, 18px);
+  letter-spacing: .04em;
+}
+
+.sector-cell .sector-tickers li {
+  white-space: nowrap;
+}
+
+.sector-cell .sector-tickers a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-underline);
+  padding-bottom: 1px;
+  transition: color .15s ease, border-color .15s ease;
+}
+
+.sector-cell .sector-tickers a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Hide secondary content in very small cells */
+@container cell (max-width: 130px), cell (max-height: 110px) {
+  .sector-cell .sector-tickers {
+    display: none;
+  }
+}
+
+@container cell (max-width: 100px), cell (max-height: 80px) {
+  .sector-cell .sector-delta {
+    display: none;
+  }
+}
+
+@container cell (max-width: 80px), cell (max-height: 60px) {
+  .sector-cell .sector-etf {
+    display: none;
+  }
+}
+
+.sector-cell:hover {
+  filter: brightness(1.04);
+}

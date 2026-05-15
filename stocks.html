@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Stocks Screener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="stocks.css">
+</head>
+<body>
+
+<header class="app">
+    <div class="brand">
+        <h1><em>Stock Screener</em> v1</h1>
+        <a href="sectors.html" class="header-link" title="Open the sector flows timeline">Sector screener →</a>
+    </div>
+    <div class="header-right">
+        <div class="profile-pill" title="Investment school — which combination of signals to use">
+            <label>School</label>
+            <div class="select-wrap">
+                <select id="schoolSelect"></select>
+                <svg class="chev" width="10" height="10" viewBox="0 0 10 10">
+                    <path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+            </div>
+        </div>
+        <div class="profile-pill" title="Threshold profile — how strict the gates are">
+            <label>Profile</label>
+            <div class="select-wrap">
+                <select id="profileSelect"></select>
+                <svg class="chev" width="10" height="10" viewBox="0 0 10 10">
+                    <path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+            </div>
+        </div>
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<nav class="tabs" id="tabs">
+    <button data-tab="setup" class="active"><span class="roman">i.</span> Setup</button>
+    <button data-tab="inputs"><span class="roman">ii.</span> Inputs</button>
+    <button data-tab="quality" data-stage="quality"><span class="roman">iii.</span> Quality</button>
+    <button data-tab="valuation" data-stage="valuation"><span class="roman">iv.</span> Valuation</button>
+    <button data-tab="momentum" data-stage="momentum"><span class="roman">iv.</span> Momentum</button>
+    <button data-tab="redflags"><span class="roman">v.</span> Red Flags</button>
+    <button data-tab="scenario"><span class="roman">vi.</span> Scenario</button>
+    <button data-tab="summary"><span class="roman">vii.</span> Summary</button>
+    <button data-tab="portfolio"><span class="roman">viii.</span> Portfolio</button>
+</nav>
+
+<main>
+    <section class="panel active" id="panel-setup"></section>
+    <section class="panel" id="panel-inputs"></section>
+    <section class="panel" id="panel-quality"></section>
+    <section class="panel" id="panel-valuation"></section>
+    <section class="panel" id="panel-momentum"></section>
+    <section class="panel" id="panel-redflags"></section>
+    <section class="panel" id="panel-scenario"></section>
+    <section class="panel" id="panel-summary"></section>
+    <section class="panel" id="panel-portfolio"></section>
+</main>
+
+<footer class="app">
+    <div class="rule"></div>
+    Quality at a discount · Margin of safety · Half-Kelly sizing
+</footer>
+
+<script src="data.js"></script>
+<script src="stocks.js"></script>
+</body>
+</html>
