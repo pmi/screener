@@ -1026,10 +1026,9 @@ function renderInputs() {
         <div class="fetch-status" id="fetchStatus"></div>
         <div class="spacer"></div>
         <div class="group">
-          <label>AV Key</label>
+          <label><a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener" title="Get a free Alpha Vantage API key">AV Key</a></label>
           <input type="password" class="field apikey" id="avKey" placeholder="paste once, saved locally" autocomplete="off" value="${safeText(
         state.avKey || '')}"/>
-          <a class="help" href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener">free key ↗</a>
         </div>
       </div>
       <div class="fetch-bar" style="border-top:0; padding-top:8px; padding-bottom:8px;">

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sector Flow Timeline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="sankey.css">
+</head>
+<body class="sectors-page sankey-page">
+
+<header class="app">
+    <div class="brand">
+        <h1><em>Sector Screener</em> v1</h1>
+    </div>
+    <div class="header-right">
+        <div class="profile-pill key-pill">
+            <label><a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener"
+                      title="Get a free Alpha Vantage API key">AV key</a></label>
+            <input id="avKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="paste key">
+        </div>
+        <button class="icon-btn" id="refreshBtn" aria-label="Refresh" title="Force re-fetch (bypass cache)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/>
+                <path d="M21 3v5h-5"/>
+                <path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/>
+                <path d="M3 21v-5h5"/>
+            </svg>
+        </button>
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<main class="sectors-main">
+    <div id="status" class="status-strip" hidden></div>
+    <div class="card">
+        <div class="sankey-scroller" id="sankeyScroller" role="region" aria-label="12-month sector flow timeline">
+            <div class="sankey-thead" id="sankeyThead"></div>
+            <div class="sankey-body" id="chartHost"></div>
+            <div class="sankey-tfoot" id="sankeyTfoot"></div>
+        </div>
+    </div>
+</main>
+
+<footer class="app">
+    <div class="rule"></div>
+    12 monthly bars per sector · positive flow (up months) above center, negative below · same data as <a
+        href="sectors.html">/sectors.html</a>
+</footer>
+
+<script src="sankey.js"></script>
+</body>
+</html>

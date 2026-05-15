@@ -1,0 +1,750 @@
+/* =============================================================================
+   common.css — Design tokens, typography, and components shared across
+   screener.html, sectors.html, and sankey.html.
+
+   Page-specific rules live in screener.css / sectors.css / sankey.css. Everything
+   in here is intended to be page-agnostic; page-level overrides should be made
+   in the respective page-specific file (loaded after this one).
+   ============================================================================= */
+
+/* ---- Design tokens ---- */
+:root {
+  --bg: #FAFAF7;
+  --surface: #FFFFFF;
+  --surface-2: #F4F2EC;
+  --border: #E8E6E0;
+  --border-strong: #D4D2CC;
+  --text: #161616;
+  --text-muted: #6B6B6B;
+  --text-faint: #A8A6A0;
+  --accent: #2D5F3F;
+  --accent-soft: rgba(45, 95, 63, .10);
+  --pass: #2D7A47;
+  --pass-soft: rgba(45, 122, 71, .10);
+  --fail: #B8392C;
+  --fail-soft: rgba(184, 57, 44, .08);
+  --warn: #A8771F;
+  --warn-soft: rgba(168, 119, 31, .10);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  --input-bg: #FFFFFF;
+  --row-alt: rgba(0, 0, 0, .018);
+  --highlight: #FFF6CE;
+  --highlight-soft: rgba(255, 222, 80, .18);
+  /* Subtle underline color used by inline links (.header-link, .ticker links,
+     and form-label links). Centralised so the same dotted feel matches across
+     HTML (border-bottom) and SVG (text-decoration-color). */
+  --link-underline: color-mix(in srgb, var(--text-muted) 50%, transparent);
+}
+
+[data-theme="dark"] {
+  --bg: #0D0E0F;
+  --surface: #161719;
+  --surface-2: #1B1D20;
+  --border: #25272A;
+  --border-strong: #3A3D42;
+  --text: #ECECE9;
+  --text-muted: #8A8C90;
+  --text-faint: #585A5E;
+  --accent: #87C195;
+  --accent-soft: rgba(135, 193, 149, .12);
+  --pass: #7AC288;
+  --pass-soft: rgba(122, 194, 136, .12);
+  --fail: #E0716A;
+  --fail-soft: rgba(224, 113, 106, .10);
+  --warn: #D9A968;
+  --warn-soft: rgba(217, 169, 104, .12);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  --input-bg: #1B1D20;
+  --row-alt: rgba(255, 255, 255, .02);
+  --highlight: #3A2F0E;
+  --highlight-soft: rgba(217, 169, 104, .10);
+}
+
+/* ---- Reset & base typography ---- */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+/* ---- Typography utilities ---- */
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.serif {
+  font-family: 'Fraunces', serif;
+  font-optical-sizing: auto;
+}
+
+.serif-italic {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-optical-sizing: auto;
+}
+
+/* ---- App shell (full-height flex column — sectors.html & sankey.html) ----
+   The `sectors-page` class is a historical name; treat it as the "full-height
+   app shell" marker for any page that needs a non-scrolling viewport-filling
+   layout. */
+html, body.sectors-page {
+  height: 100%;
+  overflow: hidden;
+}
+
+body.sectors-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectors-page header.app {
+  flex: 0 0 auto;
+}
+
+.sectors-page footer.app {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: .02em;
+  padding: 10px 36px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sectors-page footer.app .rule {
+  display: none;
+}
+
+.sectors-page .brand {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+}
+
+/* App-shell main column. Screener.css `main { max-width:1680px; margin:0 auto }`
+   would otherwise collapse this flex-column item to content width via the auto
+   cross-axis margins — sectors/sankey explicitly opt out. */
+main.sectors-main {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 24px 18px;
+  gap: 10px;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+/* ---- Header ---- */
+header.app {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 36px 16px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+}
+
+header.app .brand h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 32px;
+  letter-spacing: -.018em;
+  margin: 0;
+  font-variation-settings: "opsz" 144;
+  line-height: 1.1;
+}
+
+header.app .brand h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144;
+  margin-right: 2px;
+}
+
+header.app .brand .tag {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Inline header text link (e.g. "← Timeline"). */
+.header-link {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-underline);
+  padding-bottom: 1px;
+  letter-spacing: .02em;
+  transition: color .15s ease, border-color .15s ease;
+}
+
+.header-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ---- Footer (base — overridden by .sectors-page above) ---- */
+footer.app {
+  padding: 32px 36px;
+  color: var(--text-faint);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+  text-align: center;
+}
+
+footer.app .rule {
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+  margin: 0 auto 14px;
+}
+
+/* ---- Pills (profile-pill, key-pill) ---- */
+.profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 6px 8px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  transition: border-color .2s ease;
+}
+
+.profile-pill:hover {
+  border-color: var(--text-muted);
+}
+
+.profile-pill label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: var(--text-muted);
+}
+
+.profile-pill .select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-pill select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 30px 6px 14px;
+  border-radius: 999px;
+}
+
+.profile-pill .chev {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  opacity: .6;
+}
+
+/* AV-key entry pill (used by sectors / sankey pages). */
+.profile-pill.key-pill {
+  padding: 4px 6px 4px 16px;
+}
+
+.key-pill input {
+  appearance: none;
+  border: none;
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  width: 160px;
+  outline: none;
+}
+
+.key-pill input:focus {
+  background: var(--input-bg);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+/* Inline link styling for "kicker" labels (the AV-key label points at AV's
+   signup page). Covers both pill and fetch-bar contexts. */
+.profile-pill label a,
+.fetch-bar label a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 2px;
+  transition: color .15s ease, text-decoration-color .15s ease;
+}
+
+.profile-pill label a:hover,
+.fetch-bar label a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* SVG counterpart of the inline link styling above — sankey's lane labels.
+   SVG text uses `fill` instead of `color`, otherwise identical. */
+.lane-etf a, .lane-label a {
+  fill: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 2px;
+  transition: fill .15s ease, text-decoration-color .15s ease;
+}
+
+.lane-etf a:hover, .lane-label a:hover {
+  fill: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* ---- Icon button ---- */
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--text-muted);
+}
+
+.icon-btn:active {
+  transform: scale(.92);
+}
+
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- Buttons ---- */
+button.btn, a.btn {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  letter-spacing: .01em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+button.btn:hover, a.btn:hover {
+  border-color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+button.btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+[data-theme="dark"] button.btn.primary {
+  color: #0D0E0F;
+}
+
+button.btn.primary:hover {
+  filter: brightness(1.08);
+}
+
+button.btn.subtle {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 6px 10px;
+}
+
+button.btn.subtle:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+button.btn.danger:hover {
+  border-color: var(--fail);
+  color: var(--fail);
+}
+
+/* ---- Status strip (sectors / sankey) ---- */
+.status-strip {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-strip[data-kind="error"] {
+  color: var(--fail);
+  border-color: var(--fail);
+  background: var(--fail-soft);
+}
+
+.status-strip[data-kind="info"] {
+  color: var(--text);
+}
+
+/* ---- Card / Table ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.card-title-row {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+}
+
+.card-title-row .kicker {
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-title-row .title {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 18px;
+  margin-top: 2px;
+  font-variation-settings: "opsz" 36;
+}
+
+.card-title-row .title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.table-wrap {
+  overflow: auto;
+  max-width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 9px 12px;
+  text-align: right;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Column-header typography. Shared with sankey's `.month-label` SVG text — same
+   visual treatment, just `fill:` vs `color:` since SVG doesn't honour `color`. */
+th, .month-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+th {
+  color: var(--text-muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+th.group {
+  background: var(--surface-2);
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: .04em;
+  color: var(--text);
+  text-transform: none;
+  font-size: 12px;
+}
+
+th.left, td.left {
+  text-align: left;
+}
+
+tbody tr:hover td {
+  background: var(--row-alt);
+}
+
+/* Numeric body cells. Shared with sankey's `.month-total` SVG values. */
+td.numeric, th.numeric, .month-total {
+  font-family: 'IBM Plex Mono';
+  font-variant-numeric: tabular-nums;
+}
+
+td.dim {
+  color: var(--text-muted);
+}
+
+td.idx {
+  color: var(--text-faint);
+  font-family: 'IBM Plex Mono';
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Mono ticker typography. Shared with sankey's `.lane-etf` SVG label. */
+td.ticker, .lane-etf {
+  font-family: 'IBM Plex Mono';
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+
+td.ticker {
+  text-align: left;
+}
+
+/* Sans body-cell typography (matches `table { font-size: 13px }`). Shared with
+   sankey's `.lane-label` SVG sector name. */
+.lane-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+td.note {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 12px;
+  text-align: left;
+}
+
+input.cell, select.cell {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 5px 8px;
+  font-family: 'IBM Plex Mono';
+  font-size: 13px;
+  color: var(--text);
+  text-align: right;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+}
+
+input.cell:hover, select.cell:hover {
+  border-color: var(--border);
+}
+
+input.cell:focus, select.cell:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--input-bg);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+input.cell.text {
+  text-align: left;
+  font-family: 'IBM Plex Sans';
+}
+
+select.cell {
+  text-align: left;
+  font-family: 'IBM Plex Sans';
+  appearance: auto;
+  min-width: 80px;
+  cursor: pointer;
+}
+
+input.cell.override-input {
+  background: var(--highlight-soft);
+}
+
+input.cell.override-input:focus {
+  background: var(--input-bg);
+}
+
+/* ---- Status badges (dot, pill) ---- */
+.dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.dot.pass {
+  background: var(--pass);
+}
+
+.dot.fail {
+  background: var(--fail);
+}
+
+.dot.empty {
+  background: var(--border-strong);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px 2px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans';
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.pill.pass {
+  color: var(--pass);
+  background: var(--pass-soft);
+}
+
+.pill.fail {
+  color: var(--fail);
+  background: var(--fail-soft);
+}
+
+.pill.warn {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.pill.buy {
+  color: var(--pass);
+  background: var(--pass-soft);
+  border: 1px solid var(--pass);
+}
+
+.pill.watch {
+  color: var(--warn);
+  background: var(--warn-soft);
+  border: 1px solid var(--warn);
+}
+
+.pill.reject {
+  color: var(--fail);
+  background: var(--fail-soft);
+  border: 1px solid var(--fail);
+}
+
+.pill.empty {
+  color: var(--text-faint);
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+}
+
+.pill.neutral {
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+/* ---- Empty state (panel-level) ---- */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state .title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* ---- Scrollbar styling (subtle) ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
