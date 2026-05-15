@@ -133,7 +133,8 @@ body.sectors-page {
   display: none;
 }
 
-.sectors-page .brand {
+/* Brand area lays out the title + optional inline header link side by side. */
+.brand {
   display: flex;
   align-items: baseline;
   gap: 22px;
@@ -201,16 +202,13 @@ header.app .brand .tag {
   gap: 12px;
 }
 
-/* Inline header text link (e.g. "← Timeline"). */
+/* Inline header text link (e.g. "← Timeline", "Sector screener →"). Typography
+   is inherited from the `th, .month-label, .header-link` rule above. */
 .header-link {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text);
+  color: var(--text-muted);
   text-decoration: none;
   border-bottom: 1px solid var(--link-underline);
   padding-bottom: 1px;
-  letter-spacing: .02em;
   transition: color .15s ease, border-color .15s ease;
 }
 
@@ -508,9 +506,10 @@ th, td {
   white-space: nowrap;
 }
 
-/* Column-header typography. Shared with sankey's `.month-label` SVG text — same
-   visual treatment, just `fill:` vs `color:` since SVG doesn't honour `color`. */
-th, .month-label {
+/* Column-header / kicker typography. Shared with sankey's `.month-label` SVG
+   text and the inline `.header-link` cross-page nav — same visual treatment;
+   SVG uses `fill:` instead of `color:` since SVG doesn't honour `color`. */
+th, .month-label, .header-link {
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 500;
   font-size: 10.5px;
