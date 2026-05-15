@@ -1,0 +1,2800 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stocks Screener</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF7;
+  --surface: #FFFFFF;
+  --surface-2: #F4F2EC;
+  --border: #E8E6E0;
+  --border-strong: #D4D2CC;
+  --text: #161616;
+  --text-muted: #6B6B6B;
+  --text-faint: #A8A6A0;
+  --accent: #2D5F3F;
+  --accent-soft: rgba(45,95,63,.10);
+  --pass: #2D7A47;
+  --pass-soft: rgba(45,122,71,.10);
+  --fail: #B8392C;
+  --fail-soft: rgba(184,57,44,.08);
+  --warn: #A8771F;
+  --warn-soft: rgba(168,119,31,.10);
+  --shadow: 0 1px 2px rgba(0,0,0,.04);
+  --input-bg: #FFFFFF;
+  --row-alt: rgba(0,0,0,.018);
+  --highlight: #FFF6CE;
+  --highlight-soft: rgba(255,222,80,.18);
+}
+[data-theme="dark"] {
+  --bg: #0D0E0F;
+  --surface: #161719;
+  --surface-2: #1B1D20;
+  --border: #25272A;
+  --border-strong: #3A3D42;
+  --text: #ECECE9;
+  --text-muted: #8A8C90;
+  --text-faint: #585A5E;
+  --accent: #87C195;
+  --accent-soft: rgba(135,193,149,.12);
+  --pass: #7AC288;
+  --pass-soft: rgba(122,194,136,.12);
+  --fail: #E0716A;
+  --fail-soft: rgba(224,113,106,.10);
+  --warn: #D9A968;
+  --warn-soft: rgba(217,169,104,.12);
+  --shadow: 0 1px 2px rgba(0,0,0,.4);
+  --input-bg: #1B1D20;
+  --row-alt: rgba(255,255,255,.02);
+  --highlight: #3A2F0E;
+  --highlight-soft: rgba(217,169,104,.10);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color .25s ease, color .25s ease;
+}
+.mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+.serif { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+.serif-italic { font-family: 'Fraunces', serif; font-style: italic; font-optical-sizing: auto; }
+
+/* ---- Header ---- */
+header.app {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 36px 16px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+}
+header.app .brand h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 32px;
+  letter-spacing: -.018em;
+  margin: 0;
+  font-variation-settings: "opsz" 144;
+  line-height: 1.1;
+}
+header.app .brand h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144;
+  margin-right: 2px;
+}
+header.app .brand .tag {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+.header-right { display: flex; align-items: center; gap: 12px; }
+.profile-pill {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 6px 8px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  transition: border-color .2s ease;
+}
+.profile-pill:hover { border-color: var(--text-muted); }
+.profile-pill label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: var(--text-muted);
+}
+.profile-pill .select-wrap { position: relative; display: flex; align-items: center; }
+.profile-pill select {
+  appearance: none; -webkit-appearance: none;
+  border: none; background: var(--surface-2);
+  color: var(--text);
+  font-family: 'IBM Plex Sans'; font-weight: 500; font-size: 13px;
+  cursor: pointer;
+  padding: 6px 30px 6px 14px;
+  border-radius: 999px;
+}
+.profile-pill .chev { position: absolute; right: 10px; pointer-events: none; opacity: .6; }
+.icon-btn {
+  width: 38px; height: 38px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+  display: grid; place-items: center;
+  color: var(--text);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.icon-btn:hover { border-color: var(--text-muted); }
+.icon-btn:active { transform: scale(.92); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* ---- Tabs ---- */
+nav.tabs {
+  display: flex;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  overflow-x: auto;
+  position: sticky; top: 80px; z-index: 40;
+  backdrop-filter: saturate(160%) blur(8px);
+  -webkit-backdrop-filter: saturate(160%) blur(8px);
+}
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button {
+  background: transparent; border: none;
+  font-family: 'IBM Plex Sans'; color: var(--text-muted);
+  font-size: 12.5px; font-weight: 500;
+  padding: 14px 14px 16px;
+  cursor: pointer;
+  letter-spacing: .02em;
+  position: relative;
+  transition: color .15s ease;
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+nav.tabs button:hover { color: var(--text); }
+nav.tabs button.active { color: var(--text); }
+nav.tabs button.active::after {
+  content: ""; position: absolute; left: 14px; right: 14px; bottom: -1px;
+  height: 2px; background: var(--accent);
+}
+nav.tabs .roman {
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: 11px; color: var(--text-faint);
+  font-variation-settings: "opsz" 9;
+}
+
+/* ---- Main ---- */
+main { padding: 28px 36px 64px; max-width: 1680px; margin: 0 auto; }
+section.panel { display: none; }
+section.panel.active { display: block; animation: fadeIn .28s ease both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.panel-header { margin-bottom: 22px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.panel-header h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 32px;
+  letter-spacing: -.022em;
+  margin: 0 0 4px;
+  line-height: 1.05;
+  font-variation-settings: "opsz" 144;
+}
+.panel-header h2 em { font-style: italic; color: var(--accent); }
+.panel-header .stage { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+.panel-header p { color: var(--text-muted); margin: 6px 0 0; max-width: 720px; }
+.panel-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+button.btn, a.btn {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  letter-spacing: .01em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+  display: inline-flex; align-items: center; gap: 6px;
+  text-decoration: none;
+}
+button.btn:hover, a.btn:hover { border-color: var(--text-muted); background: var(--surface-2); }
+button.btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+[data-theme="dark"] button.btn.primary { color: #0D0E0F; }
+button.btn.primary:hover { filter: brightness(1.08); }
+button.btn.subtle { border-color: transparent; background: transparent; color: var(--text-muted); padding: 6px 10px; }
+button.btn.subtle:hover { color: var(--text); background: var(--surface-2); }
+button.btn.danger:hover { border-color: var(--fail); color: var(--fail); }
+
+/* ---- Card / Table ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.card-title-row {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--surface);
+}
+.card-title-row .kicker {
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted);
+}
+.card-title-row .title {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 18px;
+  margin-top: 2px;
+  font-variation-settings: "opsz" 36;
+}
+.card-title-row .title em { font-style: italic; color: var(--accent); }
+
+.table-wrap { overflow: auto; max-width: 100%; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 9px 12px;
+  text-align: right;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+th {
+  font-weight: 500;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+  position: sticky; top: 0;
+  z-index: 2;
+}
+th.group {
+  background: var(--surface-2);
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: .04em;
+  color: var(--text);
+  text-transform: none;
+  font-size: 12px;
+}
+th.left, td.left { text-align: left; }
+tbody tr:hover td { background: var(--row-alt); }
+td.numeric, th.numeric {
+  font-family: 'IBM Plex Mono'; font-variant-numeric: tabular-nums;
+}
+td.dim { color: var(--text-muted); }
+td.idx { color: var(--text-faint); font-family: 'IBM Plex Mono'; font-size: 11px; text-align: center; }
+td.ticker { font-family: 'IBM Plex Mono'; font-weight: 500; text-align: left; }
+td.section-row {
+  background: var(--surface-2);
+  font-size: 10px; text-transform: uppercase; letter-spacing: .15em;
+  color: var(--accent);
+  font-weight: 600;
+  text-align: left;
+  padding: 14px 12px 8px;
+  border-bottom: 1px solid var(--border-strong);
+}
+td.note { color: var(--text-muted); font-style: italic; font-size: 12px; text-align: left; }
+
+input.cell, select.cell {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 5px 8px;
+  font-family: 'IBM Plex Mono';
+  font-size: 13px;
+  color: var(--text);
+  text-align: right;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+}
+input.cell:hover, select.cell:hover { border-color: var(--border); }
+input.cell:focus, select.cell:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--input-bg);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+input.cell.text { text-align: left; font-family: 'IBM Plex Sans'; }
+select.cell { text-align: left; font-family: 'IBM Plex Sans'; appearance: auto; min-width: 80px; cursor: pointer; }
+input.cell.override-input { background: var(--highlight-soft); }
+input.cell.override-input:focus { background: var(--input-bg); }
+
+/* ---- Status badges ---- */
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; vertical-align: middle; }
+.dot.pass { background: var(--pass); }
+.dot.fail { background: var(--fail); }
+.dot.empty { background: var(--border-strong); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 9px 2px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans';
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.pill.pass { color: var(--pass); background: var(--pass-soft); }
+.pill.fail { color: var(--fail); background: var(--fail-soft); }
+.pill.warn { color: var(--warn); background: var(--warn-soft); }
+.pill.buy { color: var(--pass); background: var(--pass-soft); border: 1px solid var(--pass); }
+.pill.watch { color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn); }
+.pill.reject { color: var(--fail); background: var(--fail-soft); border: 1px solid var(--fail); }
+.pill.empty { color: var(--text-faint); background: transparent; border: 1px dashed var(--border-strong); }
+.pill.neutral { color: var(--text-muted); background: var(--surface-2); }
+
+td.gate { text-align: center; padding: 8px; }
+td.gate.pass { background: var(--pass-soft); color: var(--pass); }
+td.gate.fail { background: var(--fail-soft); color: var(--fail); }
+td.gate.empty { color: var(--text-faint); }
+
+/* ---- Setup specific ---- */
+.setup-header-row, .setup-row {
+  display: grid;
+  grid-template-columns: minmax(280px,1.6fr) 90px 100px 90px repeat(5, 80px) minmax(140px,1.2fr);
+  gap: 0;
+  align-items: center;
+}
+.setup-header-row {
+  position: sticky; top: auto; z-index: 5;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+  padding: 14px 4px 12px;
+}
+.setup-header-row > div {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted);
+  text-align: right; padding: 0 12px;
+}
+.setup-header-row .label { text-align: left; }
+.setup-header-row .note-h { text-align: left; }
+.setup-row {
+  border-bottom: 1px solid var(--border);
+  padding: 5px 4px;
+  transition: background .15s ease;
+}
+.setup-row:hover { background: var(--row-alt); }
+.setup-row .label { font-size: 13px; padding: 0 12px; }
+.setup-row .num { text-align: right; padding: 0 12px; font-family: 'IBM Plex Mono'; font-size: 13px; font-variant-numeric: tabular-nums; }
+.setup-row .num.active { color: var(--text); font-weight: 600; }
+.setup-row .num.default { color: var(--text-muted); }
+.setup-row .num.profcol { color: var(--text-faint); font-size: 12px; }
+.setup-row .num.profcol.active { color: var(--accent); font-weight: 600; }
+.setup-row .note { color: var(--text-muted); font-size: 12px; font-style: italic; padding: 0 12px; text-align: left; white-space: normal; line-height: 1.35; }
+.setup-row .override-cell { padding: 0 8px; }
+.setup-section {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .16em;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 22px 12px 8px;
+  border-bottom: 1px solid var(--accent);
+  margin-top: 4px;
+}
+.setup-section:first-of-type { margin-top: 0; }
+.setup-section em {
+  font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+  color: var(--text-muted); font-size: 11px; letter-spacing: 0; margin-left: 10px;
+  text-transform: none;
+}
+
+/* ---- Summary stat strip ---- */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.stat-strip .stat {
+  background: var(--surface);
+  padding: 14px 16px;
+}
+.stat-strip .stat .k {
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+}
+.stat-strip .stat .v {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  font-variation-settings: "opsz" 36;
+}
+.stat-strip .stat .v.mono { font-family: 'IBM Plex Mono'; font-size: 20px; font-weight: 500; }
+.stat-strip .stat .v em { font-style: italic; color: var(--accent); }
+.stat-strip .stat .v.pass { color: var(--pass); }
+.stat-strip .stat .v.fail { color: var(--fail); }
+
+/* ---- Inputs panel toolbar ---- */
+.toolbar {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.toolbar .group { display: flex; gap: 6px; align-items: center; }
+.toolbar .spacer { flex: 1; }
+.toolbar .hint { font-size: 11.5px; color: var(--text-muted); letter-spacing: .02em; }
+
+/* ---- Footer ---- */
+footer.app {
+  padding: 32px 36px;
+  color: var(--text-faint);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+  text-align: center;
+}
+footer.app .rule {
+  width: 60px; height: 1px; background: var(--accent); margin: 0 auto 14px;
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.empty-state .title {
+  font-family: 'Fraunces', serif; font-style: italic; font-size: 20px; color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* ---- Scrollbar styling (subtle) ---- */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+*::-webkit-scrollbar { height: 8px; width: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+/* ---- Fetch bar (Inputs panel) ---- */
+.fetch-bar {
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.fetch-bar .group { display: flex; gap: 8px; align-items: center; }
+.fetch-bar label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .18em;
+  color: var(--text-muted);
+}
+.fetch-bar input.field {
+  border: 1px solid var(--border-strong);
+  background: var(--input-bg);
+  color: var(--text);
+  padding: 8px 12px;
+  font-family: 'IBM Plex Mono';
+  font-size: 13px;
+  border-radius: 6px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.fetch-bar input.field:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.fetch-bar input.field.ticker {
+  width: 110px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .05em;
+}
+.fetch-bar input.field.apikey { width: 220px; }
+.fetch-bar a.help {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--text-muted);
+  letter-spacing: .03em;
+}
+.fetch-bar a.help:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.fetch-status {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-style: italic;
+  min-width: 220px;
+  font-family: 'IBM Plex Mono';
+}
+.fetch-status.error { color: var(--fail); font-style: normal; }
+.fetch-status.success { color: var(--pass); font-style: normal; font-weight: 500; }
+.fetch-status.loading {
+  color: var(--text);
+  position: relative;
+  padding-left: 22px;
+  font-style: normal;
+}
+.fetch-status.loading::before {
+  content: ""; position: absolute; left: 0; top: 50%; margin-top: -7px;
+  width: 14px; height: 14px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.fetch-bar .spacer { flex: 1; min-width: 8px; }
+.fetch-bar .meta {
+  font-size: 11px; color: var(--text-faint);
+  letter-spacing: .04em;
+}
+.fetch-bar .meta strong { color: var(--text-muted); font-weight: 500; }
+
+td.verdict-cell { padding: 8px 12px; text-align: center; }
+td.verdict-cell .pill { font-size: 9.5px; padding: 3px 9px; }
+td.row-meta {
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 0 8px;
+}
+td.row-meta.fetched { color: var(--accent); }
+
+.ticker-with-refresh { display: inline-flex; align-items: center; gap: 6px; }
+.refresh-btn {
+  width: 20px; height: 20px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  opacity: 0;
+  display: grid; place-items: center;
+  border-radius: 4px;
+  transition: opacity .15s ease, color .15s ease, background .15s ease, border-color .15s ease;
+  padding: 0;
+}
+tr:hover .refresh-btn { opacity: .55; }
+.refresh-btn:hover { opacity: 1; color: var(--accent); background: var(--accent-soft); border-color: var(--accent); }
+.refresh-btn svg { width: 12px; height: 12px; }
+.refresh-btn.spinning { opacity: 1; color: var(--accent); pointer-events: none; }
+.refresh-btn.spinning svg { animation: spin .9s linear infinite; }
+.refresh-btn.error { opacity: 1; color: var(--fail); border-color: var(--fail); background: var(--fail-soft); }
+
+/* Toast for fetches initiated from non-Inputs tabs */
+.fetch-toast {
+  position: fixed; right: 24px; bottom: 24px; z-index: 100;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  padding: 10px 14px; font-family: 'IBM Plex Mono'; font-size: 12.5px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none;
+  max-width: 360px;
+}
+.fetch-toast.show { opacity: 1; transform: none; }
+.fetch-toast.success { border-color: var(--pass); color: var(--pass); }
+.fetch-toast.error { border-color: var(--fail); color: var(--fail); }
+.fetch-toast .spinner {
+  width: 14px; height: 14px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+td.row-actions { padding: 0 8px; text-align: center; }
+button.row-remove {
+  width: 26px; height: 26px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  border-radius: 6px;
+  display: inline-grid; place-items: center;
+  opacity: .55;
+  transition: opacity .15s ease, color .15s ease, background .15s ease, border-color .15s ease;
+}
+tbody tr:hover button.row-remove { opacity: 1; }
+button.row-remove:hover {
+  color: var(--fail);
+  background: var(--fail-soft);
+  border-color: var(--fail);
+}
+button.row-remove svg { width: 14px; height: 14px; }
+
+@media (max-width: 900px) {
+  header.app, main, nav.tabs { padding-left: 18px; padding-right: 18px; }
+  .panel-header h2 { font-size: 26px; }
+  .setup-header-row, .setup-row {
+    grid-template-columns: minmax(220px,1.4fr) 80px 90px 80px minmax(140px,1fr);
+  }
+  .setup-header-row .profile-col, .setup-row .profile-col { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="brand">
+    <h1><em>Stocks Screener</em> v1</h1>
+  </div>
+  <div class="header-right">
+    <div class="profile-pill" title="Investment school — which combination of signals to use">
+      <label>School</label>
+      <div class="select-wrap">
+        <select id="schoolSelect"></select>
+        <svg class="chev" width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="profile-pill" title="Threshold profile — how strict the gates are">
+      <label>Profile</label>
+      <div class="select-wrap">
+        <select id="profileSelect"></select>
+        <svg class="chev" width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="setup" class="active"><span class="roman">i.</span> Setup</button>
+  <button data-tab="inputs"><span class="roman">ii.</span> Inputs</button>
+  <button data-tab="quality" data-stage="quality"><span class="roman">iii.</span> Quality</button>
+  <button data-tab="valuation" data-stage="valuation"><span class="roman">iv.</span> Valuation</button>
+  <button data-tab="momentum" data-stage="momentum"><span class="roman">iv.</span> Momentum</button>
+  <button data-tab="redflags"><span class="roman">v.</span> Red Flags</button>
+  <button data-tab="scenario"><span class="roman">vi.</span> Scenario</button>
+  <button data-tab="summary"><span class="roman">vii.</span> Summary</button>
+  <button data-tab="portfolio"><span class="roman">viii.</span> Portfolio</button>
+</nav>
+
+<main>
+  <section class="panel active" id="panel-setup"></section>
+  <section class="panel" id="panel-inputs"></section>
+  <section class="panel" id="panel-quality"></section>
+  <section class="panel" id="panel-valuation"></section>
+  <section class="panel" id="panel-momentum"></section>
+  <section class="panel" id="panel-redflags"></section>
+  <section class="panel" id="panel-scenario"></section>
+  <section class="panel" id="panel-summary"></section>
+  <section class="panel" id="panel-portfolio"></section>
+</main>
+
+<footer class="app">
+  <div class="rule"></div>
+  Quality at a discount · Margin of safety · Half-Kelly sizing
+</footer>
+
+<script>
+// =============================================================================
+// DATA MODEL
+// =============================================================================
+
+const PROFILE_NAMES = ['Standard', 'Conservative', 'Aggressive', 'Cyclical', 'Compounder'];
+
+// Each criterion has: key, label, comp ('min'/'max'/'info'), unit, fmt, values per profile, note
+const CRITERIA = [
+  { section: 'Stage 1 — Universe', items: [
+    { key: 'mktcap_min',    label: 'Market cap minimum ($M)',         comp: 'min', fmt: 'n0',
+      values: [500, 1000, 250, 500, 500], note: 'Liquidity floor' },
+    { key: 'adv_min',       label: 'ADV minimum ($M, 20-day)',        comp: 'min', fmt: 'n1',
+      values: [5, 10, 2, 5, 5], note: 'Trade without moving the market' },
+  ]},
+  { section: 'Stage 2A — Profitability', items: [
+    { key: 'roic5y_min',    label: 'ROIC 5y median minimum',          comp: 'min', fmt: 'pct',
+      values: [12, 15, 8, 10, 18], note: 'Excess returns on capital' },
+    { key: 'roic_yrs_min',  label: 'Years ROIC > WACC+3% (of 10)',    comp: 'min', fmt: 'n0',
+      values: [7, 8, 5, 5, 8], note: 'Consistency of excess returns' },
+    { key: 'gm_cv_max',     label: 'Gross margin CV max (σ/μ, 10y)',  comp: 'max', fmt: 'n2',
+      values: [0.15, 0.10, 0.25, 0.30, 0.10], note: 'Stability of unit economics' },
+    { key: 'fcf_margin_min',label: 'FCF margin 5y minimum',           comp: 'min', fmt: 'pct',
+      values: [8, 12, 5, 6, 12], note: 'Cash generation per dollar of revenue' },
+    { key: 'cashconv_min',  label: 'Cash conversion (FCF/NI) min',    comp: 'min', fmt: 'n2',
+      values: [0.80, 0.90, 0.70, 0.70, 0.85], note: 'Earnings quality' },
+  ]},
+  { section: 'Stage 2B — Balance Sheet', items: [
+    { key: 'ndebt_max',     label: 'Net Debt / EBITDA max',           comp: 'max', fmt: 'n1',
+      values: [2.5, 1.5, 3.5, 1.5, 2.0], note: 'Leverage tolerance' },
+    { key: 'intcov_min',    label: 'Interest coverage min (EBIT/Int)',comp: 'min', fmt: 'n1',
+      values: [6, 10, 4, 6, 8], note: '' },
+    { key: 'currratio_min', label: 'Current ratio min',               comp: 'min', fmt: 'n2',
+      values: [1.2, 1.5, 1.0, 1.2, 1.2], note: '' },
+    { key: 'altman_min',    label: 'Altman Z-score min',              comp: 'min', fmt: 'n2',
+      values: [2.99, 3.5, 1.81, 2.5, 2.99], note: 'Bankruptcy risk' },
+    { key: 'beneish_max',   label: 'Beneish M-score max',             comp: 'max', fmt: 'n2',
+      values: [-1.78, -2.22, -1.0, -1.78, -1.78], note: 'Earnings manipulation' },
+  ]},
+  { section: 'Stage 2C — Capital Allocation', items: [
+    { key: 'incroic_min',   label: 'Incremental ROIC 5y minimum',     comp: 'min', fmt: 'pct',
+      values: [10, 12, 8, 8, 15], note: 'Returns on reinvested capital' },
+    { key: 'sharecagr_max', label: 'Share count CAGR max (ex-comp)',  comp: 'max', fmt: 'pct',
+      values: [1, 0, 2, 1, 1], note: 'Dilution discipline' },
+    { key: 'acq_fcf_max',   label: "Acquisition / 5y FCF max",        comp: 'max', fmt: 'pct',
+      values: [30, 20, 50, 25, 30], note: 'M&A discipline' },
+  ]},
+  { section: 'Stage 2D — Durability', items: [
+    { key: 'rev_cagr_min',  label: 'Revenue CAGR 5y minimum',         comp: 'min', fmt: 'pct',
+      values: [4, 5, 2, 0, 8], note: 'Real growth' },
+    { key: 'topcust_max',   label: 'Top customer % rev max',          comp: 'max', fmt: 'pct',
+      values: [15, 10, 25, 15, 15], note: 'Customer concentration' },
+  ]},
+  { section: 'Stage 3 — Valuation', items: [
+    { key: 'evebit_max',    label: 'EV/EBIT max',                     comp: 'max', fmt: 'n1',
+      values: [12, 10, 16, 8, 18], note: 'Absolute valuation' },
+    { key: 'evebit_pct_max',label: 'EV/EBIT 10y percentile max',      comp: 'max', fmt: 'pct',
+      values: [25, 25, 40, 25, 30], note: 'Relative to own history' },
+    { key: 'fcfy_min',      label: 'FCF yield min (FCF / EV)',        comp: 'min', fmt: 'pct',
+      values: [6, 7, 5, 8, 4], note: 'Cash yield' },
+    { key: 'peg_max',       label: 'PEG max',                         comp: 'max', fmt: 'n2',
+      values: [1.2, 1.0, 1.5, 1.5, 1.4], note: 'Growth-adjusted PE' },
+    { key: 'rdcf_max',      label: 'Reverse DCF implied / consensus max', comp: 'max', fmt: 'pct',
+      values: [50, 40, 70, 60, 60], note: 'Market underpricing growth' },
+    { key: 'acqmul_pct_max',label: "Acquirer's multiple percentile max", comp: 'max', fmt: 'pct',
+      values: [25, 25, 40, 25, 35], note: 'Greenblatt rank' },
+    { key: 'val_passes_min',label: 'Min valuation criteria passes (of 6)', comp: 'min', fmt: 'n0',
+      values: [3, 4, 2, 3, 3], note: 'How many of 6 must clear' },
+    { key: 'mos_min',       label: 'Minimum Margin of Safety',        comp: 'min', fmt: 'pct',
+      values: [30, 40, 20, 30, 25], note: '(IV − Price) / IV' },
+  ]},
+  { section: 'Stage 4 — Red Flags', items: [
+    { key: 'accruals_max',  label: 'Accruals ratio max',              comp: 'max', fmt: 'pct',
+      values: [5, 3, 8, 5, 5], note: 'Sloan ratio' },
+    { key: 'dso_max',       label: 'DSO YoY change max',              comp: 'max', fmt: 'pct',
+      values: [25, 15, 35, 25, 25], note: 'Receivables stretch' },
+    { key: 'ocfni_min',     label: 'OCF / NI min',                    comp: 'min', fmt: 'n2',
+      values: [0.70, 0.80, 0.50, 0.70, 0.70], note: 'Cash-backed earnings' },
+    { key: 'goodwill_max',  label: 'Goodwill / Assets max',           comp: 'max', fmt: 'pct',
+      values: [40, 30, 50, 40, 40], note: 'Acquisition risk' },
+    { key: 'insider_max',   label: 'Insider net selling 12m max',     comp: 'max', fmt: 'pct',
+      values: [5, 3, 10, 5, 5], note: '% of insider holdings sold' },
+    { key: 'short_max',     label: 'Short interest max',              comp: 'max', fmt: 'pct',
+      values: [15, 10, 25, 15, 15], note: '% of float' },
+  ]},
+  { section: 'Stage 3M — Momentum (Q+M and V+M schools)', items: [
+    { key: 'mom12_1_min',    label: '12–1 month price momentum min',  comp: 'min', fmt: 'pct',
+      values: [10, 15, 5, 8, 12], note: '12-mo return excluding most recent month (academic standard)' },
+    { key: 'mom6m_min',      label: '6-month price momentum min',     comp: 'min', fmt: 'pct',
+      values: [5, 8, 0, 3, 8], note: 'Recent trend strength' },
+    { key: 'dist_52wh_min',  label: 'Distance from 52-week high min', comp: 'min', fmt: 'pct',
+      values: [-15, -10, -25, -20, -10], note: 'Negative — how far below recent high. Closer to 0 = stronger' },
+    { key: 'above_200dma_min',label:'Above 200-day MA (1 = yes)',     comp: 'min', fmt: 'n0',
+      values: [1, 1, 0, 1, 1], note: 'Primary trend confirmation' },
+    { key: 'rs_index_min',   label: 'Relative strength vs index 6m min', comp: 'min', fmt: 'pct',
+      values: [0, 5, -5, 0, 3], note: 'Outperformance vs benchmark' },
+    { key: 'eps_rev_min',    label: 'EPS revisions 90d min',          comp: 'min', fmt: 'pct',
+      values: [0, 2, -3, 0, 0], note: 'FY1 analyst estimate trend' },
+    { key: 'mom_passes_min', label: 'Min momentum criteria passes (of 6)', comp: 'min', fmt: 'n0',
+      values: [4, 5, 3, 4, 4], note: 'How many of 6 must clear' },
+  ]},
+  { section: 'Stage 5 — Expected Return', items: [
+    { key: 'eirr_min',      label: 'Min probability-weighted IRR',    comp: 'min', fmt: 'pct',
+      values: [15, 18, 12, 15, 15], note: '3–5 year horizon' },
+  ]},
+  { section: 'Stage 6 — Portfolio', items: [
+    { key: 'maxpos',        label: 'Max position size',               comp: 'info', fmt: 'pct',
+      values: [8, 6, 10, 8, 8], note: 'Per name cap' },
+    { key: 'maxsector',     label: 'Max sector weight',               comp: 'info', fmt: 'pct',
+      values: [25, 20, 30, 25, 25], note: 'GICS sector cap' },
+    { key: 'target_holdings',label:'Target portfolio holdings',       comp: 'info', fmt: 'n0',
+      values: [20, 25, 15, 20, 18], note: 'Number of names' },
+    { key: 'kelly_mult',    label: 'Kelly fraction multiplier',       comp: 'info', fmt: 'n2',
+      values: [0.5, 0.25, 0.75, 0.5, 0.5], note: 'Half-Kelly default' },
+    { key: 'liq_max',       label: 'Max position / 20d ADV',          comp: 'info', fmt: 'pct',
+      values: [10, 5, 15, 10, 10], note: 'Liquidity rule' },
+  ]},
+];
+
+// Build PROFILES lookup: { Standard: { key: value, ... }, ... }
+const PROFILES = {};
+PROFILE_NAMES.forEach((p, idx) => {
+  PROFILES[p] = {};
+  CRITERIA.forEach(sec => sec.items.forEach(it => {
+    PROFILES[p][it.key] = it.values[idx];
+  }));
+});
+
+// Flat criterion lookup
+const CRIT_BY_KEY = {};
+CRITERIA.forEach(sec => sec.items.forEach(it => { CRIT_BY_KEY[it.key] = it; }));
+
+// Investment schools — each defines its own 5-stage funnel.
+// Common stages: universe, redflags, scenario. Variable: quality / valuation / momentum.
+const SCHOOLS = {
+  'Quality + Value':    { stages: ['universe', 'quality',   'valuation', 'redflags', 'scenario'] },
+  'Quality + Momentum': { stages: ['universe', 'quality',   'momentum',  'redflags', 'scenario'] },
+  'Value + Momentum':   { stages: ['universe', 'valuation', 'momentum',  'redflags', 'scenario'] },
+};
+const SCHOOL_NAMES = Object.keys(SCHOOLS);
+
+function schoolStages() { return SCHOOLS[state.school].stages; }
+function schoolUses(stage) { return schoolStages().includes(stage); }
+
+// Plain-English definitions, keyed by input/metric key. Used in cell + header tooltips.
+const METRIC_DEFINITIONS = {
+  ticker: 'Stock ticker symbol (e.g. AAPL, MSFT).',
+  name: 'Company name.',
+  sector: 'GICS sector classification.',
+  mktcap: 'Market Capitalization in $ millions — the total stock-market value of the company (price × shares). Larger caps are easier to trade in size.',
+  adv: 'Average Daily dollar Volume in $ millions — typical $ value traded per day. A $1M position can move the stock if it is too large a share of ADV.',
+
+  roic5y: 'Return On Invested Capital, 5-year median. The % return the business earns on every dollar of capital (equity + debt) at work in operations. Above 12% means the company creates real value year after year. The single most important quality signal.',
+  roic_yrs: 'Count of years (out of last 10) where ROIC exceeded WACC + 3% — a proxy for whether the company has consistently created shareholder value, not just in one good year. Free Alpha Vantage tier only provides 5 years.',
+  gm_cv: 'Gross Margin coefficient of variation = standard deviation ÷ mean over 10 years. Low values = stable, predictable unit economics. High values = cyclical, commodity-like, or product-mix dependent.',
+  fcf_margin: 'Free Cash Flow margin = FCF ÷ Revenue, 5-year average. The % of every dollar of sales that becomes actual cash after paying for capital expenditures. Above 8% means a real cash machine.',
+  cashconv: 'Cash conversion = sum of 5y Free Cash Flow ÷ sum of 5y Net Income. Above 0.80 means most reported earnings convert to real cash. Low conversion = earnings backed by accounting estimates, not cash.',
+
+  ndebt: 'Net Debt ÷ EBITDA — how many years of cash earnings it would take to repay all debt minus cash on hand. Below 2.5× = comfortable. Above 3× = stretched.',
+  intcov: 'Interest Coverage = EBIT ÷ Interest Expense — how many times the company can cover its interest bill from operating profit. Above 6× = safe.',
+  currratio: 'Current Ratio = current assets ÷ current liabilities — short-term liquidity. Above 1.2 means the company can meet near-term obligations without raising capital.',
+  altman: 'Altman Z-score — a bankruptcy-risk score combining 5 balance-sheet ratios. Above 2.99 = healthy. Below 1.81 = distress zone.',
+  beneish: 'Beneish M-score — a statistical flag for earnings manipulation built from 8 ratios. Companies scoring above −1.78 have historically been more likely to be manipulating earnings. Lower (more negative) = cleaner accounting.',
+
+  incroic: 'Incremental ROIC over 5y = change in NOPAT ÷ change in Invested Capital. The return the company earns on capital it reinvests. Above 10% means management is allocating capital productively.',
+  sharecagr: 'Share-count CAGR over 5 years, excluding stock-based comp. Below 1% growth (or negative = buybacks) means shareholders are not being meaningfully diluted.',
+  acq_fcf: 'Acquisition spending over the last 5 years as % of cumulative free cash flow. Above 50% means the company has been an aggressive acquirer — historically a value destroyer unless there is a strong integration track record.',
+
+  rev_cagr: 'Revenue CAGR over 5 years — top-line growth rate. Above 4% real-terms growth means the business is expanding, not melting.',
+  topcust: 'Top customer as % of revenue — customer concentration risk. If one customer is above 15% of revenue, losing them would hurt badly.',
+
+  evebit: 'EV ÷ EBIT = (Market Cap + Debt − Cash) ÷ Operating Earnings. How many years of operating profit you are paying to buy the whole business. Below 12× is reasonable.',
+  evebit_pct: 'Where current EV/EBIT ranks within the company\'s own 10-year history (percentile). Below 25th percentile = trading cheap vs. its own past.',
+  fcfy: 'Free Cash Flow Yield = FCF ÷ Enterprise Value. Like an interest rate on the business. Above 6% is a healthy yield, comparable to a high-yield bond but with growth.',
+  peg: 'PEG = P/E divided by expected growth rate. Below 1.2 means you are paying less than 1× the growth rate for earnings. The classic Peter Lynch screen.',
+  rdcf_ratio: 'Reverse-DCF implied growth ÷ consensus expected growth. Reverse DCF backs out the growth rate the current stock price assumes. Below 50% means the market is pricing much less growth than analysts expect — potential upside.',
+  acqmul_pct: 'Acquirer\'s Multiple percentile rank (lower = cheaper). Greenblatt\'s measure: EV ÷ Operating Earnings within sector. Below 25th percentile = cheaper than 75% of peers.',
+  iv: 'Intrinsic Value per share — your fair-value estimate (DCF, multiple-based, etc.). Auto-fill uses sector-typical PE × TTM EPS; refine with your own model.',
+  price: 'Current stock price.',
+
+  accruals: 'Accruals ratio (Sloan ratio) = (Net Income − Operating Cash Flow) ÷ Total Assets. High accruals = earnings growing faster than cash. Historically a predictor of earnings disappointments.',
+  dso: 'Days Sales Outstanding year-over-year change. If receivables grow faster than revenue, the company may be stuffing the channel or extending generous credit — a warning sign.',
+  ocfni: 'Operating Cash Flow ÷ Net Income. Above 0.70 means earnings are mostly cash-backed. Below 0.70 = profits driven by accounting estimates.',
+  goodwill: 'Goodwill as % of total assets. High goodwill = the company has paid premium prices for acquisitions. Risk of future write-downs.',
+  insider: 'Insider net selling over the last 12 months as % of insider holdings. Above 5% = management voting with their feet.',
+  short: 'Short interest as % of float — bets against the stock. Above 15% means a meaningful contingent of investors expects bad news. Investigate why before buying.',
+  auditor_chg: 'Auditor change in the last 2 years (Y/N). Unexplained auditor changes sometimes precede accounting disputes.',
+  restate: 'Financial restatement in the last 3 years (Y/N). Restatements signal prior-year earnings were not reliable.',
+
+  mom12_1: '12–1 month price momentum — the 12-month total return excluding the most recent month. The academic momentum factor. Skipping the last month avoids 1-month reversal noise. Auto-computed from daily prices.',
+  mom6m: '6-month price return — recent trend strength. Used to confirm intermediate-term momentum.',
+  dist_52wh: 'Distance from 52-week high (negative %). How far below the recent peak the stock is trading. Closer to 0 = stronger; below −20% = downtrend.',
+  above_200dma: 'Above 200-day moving average (1 = yes, 0 = no). The primary long-term trend filter — institutions watch this religiously.',
+  rs_index: 'Relative strength vs benchmark (6-month outperformance %). Stock return minus benchmark return. Positive = beating the market.',
+  eps_rev: 'EPS revisions over the last 90 days (% change in FY1 consensus estimate). Rising revisions = analysts upgrading; falling = downgrading.',
+
+  bull_irr: 'Bull-case annualized return — what you make per year if the optimistic scenario plays out.',
+  bull_p: 'Probability you assign to the bull case (0–100%).',
+  base_irr: 'Base-case annualized return.',
+  base_p: 'Probability of the base case.',
+  bear_irr: 'Bear-case annualized return (usually negative).',
+  bear_p: 'Probability of the bear case. All three probabilities must sum to 100%.',
+
+  moat: 'Competitive moat (Wide / Narrow / None). Sustainable advantages: scale, network effects, switching costs, IP, brand. Wide = at least 10 years of protected returns expected.',
+  mgmt_own: 'Management ownership as % of shares outstanding. Skin in the game — high insider ownership aligns management with shareholders.',
+  turnover: 'Count of CEO/CFO turnovers in the last 5 years. Above 2 = instability red flag.',
+};
+
+// Non-metric criterion descriptions (used for Setup tooltips)
+const CRITERION_EXTRA_DEFS = {
+  val_passes_min: 'Number of valuation criteria (out of 6) that must clear for the stock to pass Stage 3. Lower = more lenient.',
+  mom_passes_min: 'Number of momentum criteria (out of 6) that must clear for the stock to pass the Momentum stage. Lower = more lenient.',
+  mos_min: 'Margin of Safety = (Intrinsic Value − Price) ÷ IV. The discount to fair value you require before buying. 30% means buy only when the stock trades at least 30% below your IV estimate.',
+  eirr_min: 'Minimum probability-weighted expected IRR. Below this, the position is not worth the opportunity cost of capital.',
+  maxpos: 'Maximum size of any single position as % of portfolio. Caps single-stock risk.',
+  maxsector: 'Maximum exposure to any one GICS sector. Caps sector concentration.',
+  target_holdings: 'Target number of concurrent positions in the portfolio.',
+  kelly_mult: 'Fraction of full-Kelly to use for sizing (1.0 = full, 0.5 = half-Kelly). Lower = more conservative.',
+  liq_max: 'Maximum position size as % of 20-day average dollar volume. Higher = harder to exit without market impact.',
+};
+
+// Resolve a plain-English description for a criterion key (Setup) or metric key (Inputs/Scoring)
+function defFor(key) {
+  if (CRITERION_EXTRA_DEFS[key]) return CRITERION_EXTRA_DEFS[key];
+  if (METRIC_DEFINITIONS[key]) return METRIC_DEFINITIONS[key];
+  if (key === 'rdcf_max') return METRIC_DEFINITIONS.rdcf_ratio;
+  // strip _min / _max suffix
+  const m = String(key).replace(/_(min|max)$/, '');
+  return METRIC_DEFINITIONS[m] || '';
+}
+
+// Input fields for tickers (Inputs panel)
+const INPUT_GROUPS = [
+  { group: 'Identity', items: [
+    { key: 'ticker', label: 'Ticker', type: 'text' },
+    { key: 'name', label: 'Name', type: 'text' },
+    { key: 'sector', label: 'Sector', type: 'text' },
+    { key: 'mktcap', label: 'Mkt Cap ($M)', type: 'num', fmt: 'n0' },
+    { key: 'adv', label: 'ADV ($M, 20d)', type: 'num', fmt: 'n1' },
+  ]},
+  { group: 'Profitability', items: [
+    { key: 'roic5y', label: 'ROIC 5y median', type: 'pct' },
+    { key: 'roic_yrs', label: 'Yrs ROIC>WACC+3% (of 10)', type: 'num', fmt: 'n0' },
+    { key: 'gm_cv', label: 'GM CV (σ/μ)', type: 'num', fmt: 'n2' },
+    { key: 'fcf_margin', label: 'FCF margin 5y', type: 'pct' },
+    { key: 'cashconv', label: 'Cash conv. (FCF/NI)', type: 'num', fmt: 'n2' },
+  ]},
+  { group: 'Balance Sheet', items: [
+    { key: 'ndebt', label: 'Net Debt/EBITDA', type: 'num', fmt: 'n1' },
+    { key: 'intcov', label: 'Int. coverage', type: 'num', fmt: 'n1' },
+    { key: 'currratio', label: 'Current ratio', type: 'num', fmt: 'n2' },
+    { key: 'altman', label: 'Altman Z', type: 'num', fmt: 'n2' },
+    { key: 'beneish', label: 'Beneish M', type: 'num', fmt: 'n2' },
+  ]},
+  { group: 'Capital Allocation', items: [
+    { key: 'incroic', label: 'Incremental ROIC 5y', type: 'pct' },
+    { key: 'sharecagr', label: 'Share count CAGR', type: 'pct' },
+    { key: 'acq_fcf', label: 'Acq / 5y FCF', type: 'pct' },
+  ]},
+  { group: 'Durability', items: [
+    { key: 'rev_cagr', label: 'Revenue CAGR 5y', type: 'pct' },
+    { key: 'topcust', label: 'Top customer %', type: 'pct' },
+  ]},
+  { group: 'Valuation', items: [
+    { key: 'evebit', label: 'EV/EBIT', type: 'num', fmt: 'n1' },
+    { key: 'evebit_pct', label: 'EV/EBIT 10y %ile', type: 'pct' },
+    { key: 'fcfy', label: 'FCF yield', type: 'pct' },
+    { key: 'peg', label: 'PEG', type: 'num', fmt: 'n2' },
+    { key: 'rdcf_ratio', label: 'RevDCF / consensus', type: 'pct' },
+    { key: 'acqmul_pct', label: "Acq mult %ile", type: 'pct' },
+    { key: 'iv', label: 'Intrinsic value/share', type: 'num', fmt: 'n2' },
+    { key: 'price', label: 'Price', type: 'num', fmt: 'n2' },
+  ]},
+  { group: 'Momentum', items: [
+    { key: 'mom12_1', label: '12-1m return', type: 'pct' },
+    { key: 'mom6m', label: '6m return', type: 'pct' },
+    { key: 'dist_52wh', label: 'Dist 52w-H', type: 'pct' },
+    { key: 'above_200dma', label: '> 200d MA (1=Y)', type: 'num', fmt: 'n0' },
+    { key: 'rs_index', label: 'RS vs SPX 6m', type: 'pct' },
+    { key: 'eps_rev', label: 'EPS rev 90d', type: 'pct' },
+  ]},
+  { group: 'Red Flags', items: [
+    { key: 'accruals', label: 'Accruals ratio', type: 'pct' },
+    { key: 'dso', label: 'DSO YoY Δ', type: 'pct' },
+    { key: 'ocfni', label: 'OCF / NI', type: 'num', fmt: 'n2' },
+    { key: 'goodwill', label: 'Goodwill / Assets', type: 'pct' },
+    { key: 'insider', label: 'Insider sell 12m', type: 'pct' },
+    { key: 'short', label: 'Short int.', type: 'pct' },
+    { key: 'auditor_chg', label: 'Auditor chg 2y', type: 'yn' },
+    { key: 'restate', label: 'Restated 3y', type: 'yn' },
+  ]},
+  { group: 'Scenarios (3–5y IRR)', items: [
+    { key: 'bull_irr', label: 'Bull IRR', type: 'pct' },
+    { key: 'bull_p', label: 'Bull P', type: 'pct' },
+    { key: 'base_irr', label: 'Base IRR', type: 'pct' },
+    { key: 'base_p', label: 'Base P', type: 'pct' },
+    { key: 'bear_irr', label: 'Bear IRR', type: 'pct' },
+    { key: 'bear_p', label: 'Bear P', type: 'pct' },
+  ]},
+  { group: 'Qualitative', items: [
+    { key: 'moat', label: 'Moat', type: 'moat' },
+    { key: 'mgmt_own', label: 'Mgmt ownership %', type: 'pct' },
+    { key: 'turnover', label: 'CEO/CFO turnover (5y)', type: 'num', fmt: 'n0' },
+  ]},
+];
+
+const INPUT_KEYS = [];
+INPUT_GROUPS.forEach(g => g.items.forEach(f => INPUT_KEYS.push(f.key)));
+
+// Gate definitions per scoring panel
+const UNIVERSE_GATES = [
+  { label: 'Mkt Cap ≥', metric: 'mktcap', thr: 'mktcap_min' },
+  { label: 'ADV ≥',     metric: 'adv',    thr: 'adv_min' },
+];
+const QUALITY_GATES = [
+  { label: 'ROIC 5y ≥',         metric: 'roic5y',     thr: 'roic5y_min' },
+  { label: 'Yrs ROIC>WACC ≥',   metric: 'roic_yrs',   thr: 'roic_yrs_min' },
+  { label: 'GM CV ≤',           metric: 'gm_cv',      thr: 'gm_cv_max' },
+  { label: 'FCF margin ≥',      metric: 'fcf_margin', thr: 'fcf_margin_min' },
+  { label: 'Cash conv ≥',       metric: 'cashconv',   thr: 'cashconv_min' },
+  { label: 'ND/EBITDA ≤',       metric: 'ndebt',      thr: 'ndebt_max' },
+  { label: 'Int cov ≥',         metric: 'intcov',     thr: 'intcov_min' },
+  { label: 'Curr ratio ≥',      metric: 'currratio',  thr: 'currratio_min' },
+  { label: 'Altman Z ≥',        metric: 'altman',     thr: 'altman_min' },
+  { label: 'Beneish M ≤',       metric: 'beneish',    thr: 'beneish_max' },
+  { label: 'Inc. ROIC ≥',       metric: 'incroic',    thr: 'incroic_min' },
+  { label: 'Share CAGR ≤',      metric: 'sharecagr',  thr: 'sharecagr_max' },
+  { label: 'Acq/FCF ≤',         metric: 'acq_fcf',    thr: 'acq_fcf_max' },
+  { label: 'Rev CAGR ≥',        metric: 'rev_cagr',   thr: 'rev_cagr_min' },
+  { label: 'Top cust ≤',        metric: 'topcust',    thr: 'topcust_max' },
+];
+const VALUATION_GATES = [
+  { label: 'EV/EBIT ≤',         metric: 'evebit',      thr: 'evebit_max' },
+  { label: 'EV/EBIT %ile ≤',    metric: 'evebit_pct',  thr: 'evebit_pct_max' },
+  { label: 'FCF yield ≥',       metric: 'fcfy',        thr: 'fcfy_min' },
+  { label: 'PEG ≤',             metric: 'peg',         thr: 'peg_max' },
+  { label: 'RDCF/Cons ≤',       metric: 'rdcf_ratio',  thr: 'rdcf_max' },
+  { label: 'Acq mult %ile ≤',   metric: 'acqmul_pct',  thr: 'acqmul_pct_max' },
+];
+const MOMENTUM_GATES = [
+  { label: '12–1m ≥',          metric: 'mom12_1',      thr: 'mom12_1_min' },
+  { label: '6-mo ≥',           metric: 'mom6m',        thr: 'mom6m_min' },
+  { label: 'Dist 52w-H ≥',     metric: 'dist_52wh',    thr: 'dist_52wh_min' },
+  { label: '> 200d MA',        metric: 'above_200dma', thr: 'above_200dma_min' },
+  { label: 'RS vs SPX ≥',      metric: 'rs_index',     thr: 'rs_index_min' },
+  { label: 'EPS rev ≥',        metric: 'eps_rev',      thr: 'eps_rev_min' },
+];
+const REDFLAG_GATES = [
+  { label: 'Accruals ≤',        metric: 'accruals',   thr: 'accruals_max' },
+  { label: 'DSO Δ ≤',           metric: 'dso',        thr: 'dso_max' },
+  { label: 'OCF/NI ≥',          metric: 'ocfni',      thr: 'ocfni_min' },
+  { label: 'Goodwill ≤',        metric: 'goodwill',   thr: 'goodwill_max' },
+  { label: 'Insider sell ≤',    metric: 'insider',    thr: 'insider_max' },
+  { label: 'Short int ≤',       metric: 'short',      thr: 'short_max' },
+];
+const REDFLAG_YN_GATES = [
+  { label: 'No auditor chg',    metric: 'auditor_chg' },
+  { label: 'No restatement',    metric: 'restate' },
+];
+
+// Sample tickers — illustrative data only
+const SAMPLE_TICKERS = [
+  { ticker:'COST', name:'Costco', sector:'Cons. Staples',
+    mktcap:380000, adv:1200,
+    roic5y:21, roic_yrs:10, gm_cv:0.04, fcf_margin:3.2, cashconv:0.95,
+    ndebt:-0.2, intcov:42, currratio:1.07, altman:5.6, beneish:-2.4,
+    incroic:24, sharecagr:0.0, acq_fcf:0,
+    rev_cagr:10, topcust:1,
+    evebit:32, evebit_pct:85, fcfy:2.6, peg:2.8, rdcf_ratio:75, acqmul_pct:90,
+    iv:520, price:840,
+    accruals:1.2, dso:5, ocfni:1.0, goodwill:1, insider:0.5, short:1.4,
+    auditor_chg:'N', restate:'N',
+    bull_irr:12, bull_p:25, base_irr:6, base_p:55, bear_irr:-8, bear_p:20,
+    moat:'Wide', mgmt_own:0.5, turnover:0 },
+  { ticker:'ULVR', name:'Unilever', sector:'Cons. Staples',
+    mktcap:120000, adv:300,
+    roic5y:16, roic_yrs:9, gm_cv:0.08, fcf_margin:13, cashconv:0.92,
+    ndebt:2.1, intcov:11, currratio:0.78, altman:3.1, beneish:-2.1,
+    incroic:14, sharecagr:0.2, acq_fcf:18,
+    rev_cagr:3, topcust:2,
+    evebit:13.5, evebit_pct:20, fcfy:6.5, peg:1.6, rdcf_ratio:40, acqmul_pct:22,
+    iv:55, price:48,
+    accruals:2.0, dso:3, ocfni:1.05, goodwill:36, insider:0.4, short:0.7,
+    auditor_chg:'N', restate:'N',
+    bull_irr:16, bull_p:30, base_irr:10, base_p:50, bear_irr:-2, bear_p:20,
+    moat:'Wide', mgmt_own:0.1, turnover:1 },
+  { ticker:'GOOGL', name:'Alphabet', sector:'Comm. Services',
+    mktcap:2100000, adv:8000,
+    roic5y:28, roic_yrs:10, gm_cv:0.05, fcf_margin:22, cashconv:0.88,
+    ndebt:-1.4, intcov:200, currratio:2.1, altman:8.2, beneish:-2.7,
+    incroic:32, sharecagr:-0.8, acq_fcf:8,
+    rev_cagr:17, topcust:1,
+    evebit:18, evebit_pct:35, fcfy:4.2, peg:1.3, rdcf_ratio:55, acqmul_pct:30,
+    iv:210, price:175,
+    accruals:1.8, dso:6, ocfni:0.93, goodwill:8, insider:0.3, short:0.6,
+    auditor_chg:'N', restate:'N',
+    bull_irr:20, bull_p:35, base_irr:12, base_p:50, bear_irr:-5, bear_p:15,
+    moat:'Wide', mgmt_own:5, turnover:0 },
+  { ticker:'PARA', name:'Paramount Global', sector:'Comm. Services',
+    mktcap:8500, adv:90,
+    roic5y:3, roic_yrs:2, gm_cv:0.12, fcf_margin:2, cashconv:0.4,
+    ndebt:4.8, intcov:1.6, currratio:1.1, altman:0.9, beneish:-1.2,
+    incroic:-2, sharecagr:0.6, acq_fcf:65,
+    rev_cagr:-2, topcust:8,
+    evebit:14, evebit_pct:55, fcfy:3, peg:5, rdcf_ratio:95, acqmul_pct:55,
+    iv:12, price:11,
+    accruals:6, dso:35, ocfni:0.35, goodwill:48, insider:2, short:18,
+    auditor_chg:'N', restate:'N',
+    bull_irr:25, bull_p:20, base_irr:0, base_p:50, bear_irr:-30, bear_p:30,
+    moat:'Narrow', mgmt_own:0.1, turnover:2 },
+];
+
+// =============================================================================
+// ALPHA VANTAGE FETCH
+// =============================================================================
+
+// Sector medians for judgment-based fields. Sector strings match Alpha Vantage's `Sector` field.
+const SECTOR_DEFAULTS = {
+  'TECHNOLOGY':              { moat:'Wide',   bull_irr:22, bull_p:30, base_irr:12, base_p:50, bear_irr:-8,  bear_p:20, target_pe:24 },
+  'COMMUNICATION SERVICES':  { moat:'Narrow', bull_irr:20, bull_p:25, base_irr:10, base_p:55, bear_irr:-10, bear_p:20, target_pe:20 },
+  'CONSUMER CYCLICAL':       { moat:'Narrow', bull_irr:18, bull_p:25, base_irr:8,  base_p:55, bear_irr:-15, bear_p:20, target_pe:18 },
+  'CONSUMER DISCRETIONARY':  { moat:'Narrow', bull_irr:18, bull_p:25, base_irr:8,  base_p:55, bear_irr:-15, bear_p:20, target_pe:18 },
+  'CONSUMER DEFENSIVE':      { moat:'Wide',   bull_irr:12, bull_p:25, base_irr:7,  base_p:60, bear_irr:-5,  bear_p:15, target_pe:20 },
+  'CONSUMER STAPLES':        { moat:'Wide',   bull_irr:12, bull_p:25, base_irr:7,  base_p:60, bear_irr:-5,  bear_p:15, target_pe:20 },
+  'ENERGY':                  { moat:'None',   bull_irr:25, bull_p:25, base_irr:5,  base_p:50, bear_irr:-20, bear_p:25, target_pe:10 },
+  'FINANCIAL SERVICES':      { moat:'Narrow', bull_irr:15, bull_p:25, base_irr:8,  base_p:55, bear_irr:-12, bear_p:20, target_pe:12 },
+  'FINANCIALS':              { moat:'Narrow', bull_irr:15, bull_p:25, base_irr:8,  base_p:55, bear_irr:-12, bear_p:20, target_pe:12 },
+  'HEALTHCARE':              { moat:'Wide',   bull_irr:18, bull_p:25, base_irr:10, base_p:55, bear_irr:-8,  bear_p:20, target_pe:18 },
+  'HEALTH CARE':             { moat:'Wide',   bull_irr:18, bull_p:25, base_irr:10, base_p:55, bear_irr:-8,  bear_p:20, target_pe:18 },
+  'INDUSTRIALS':             { moat:'Narrow', bull_irr:16, bull_p:25, base_irr:8,  base_p:55, bear_irr:-10, bear_p:20, target_pe:16 },
+  'MATERIALS':               { moat:'None',   bull_irr:20, bull_p:25, base_irr:6,  base_p:50, bear_irr:-18, bear_p:25, target_pe:12 },
+  'BASIC MATERIALS':         { moat:'None',   bull_irr:20, bull_p:25, base_irr:6,  base_p:50, bear_irr:-18, bear_p:25, target_pe:12 },
+  'REAL ESTATE':             { moat:'Narrow', bull_irr:12, bull_p:25, base_irr:7,  base_p:55, bear_irr:-10, bear_p:20, target_pe:18 },
+  'UTILITIES':               { moat:'Narrow', bull_irr:10, bull_p:25, base_irr:6,  base_p:60, bear_irr:-5,  bear_p:15, target_pe:17 },
+  '_DEFAULT':                { moat:'Narrow', bull_irr:16, bull_p:25, base_irr:8,  base_p:55, bear_irr:-10, bear_p:20, target_pe:16 },
+};
+
+// Generic defaults for fields with no good sector proxy. Set to values that don't unfairly disqualify a name.
+const GENERIC_DEFAULTS = {
+  evebit_pct: 50, rdcf_ratio: 50, acqmul_pct: 50,
+  beneish: -2.0, accruals: 2.0, dso: 5,
+  topcust: 5, insider: 0, short: 5, mgmt_own: 1, turnover: 0,
+  acq_fcf: 10, auditor_chg: 'N', restate: 'N',
+  // Momentum defaults set to neutral: rs_index and eps_rev aren't fetched from AV.
+  rs_index: 0, eps_rev: 0,
+};
+
+function avNum(v) {
+  if (v === null || v === undefined || v === 'None' || v === '-' || v === '') return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+function mean(a) {
+  const f = a.filter(x => x !== null && Number.isFinite(x));
+  return f.length ? f.reduce((s,x)=>s+x,0)/f.length : null;
+}
+function median(a) {
+  const f = a.filter(x => x !== null && Number.isFinite(x)).sort((x,y)=>x-y);
+  if (!f.length) return null;
+  const m = Math.floor(f.length/2);
+  return f.length % 2 ? f[m] : (f[m-1] + f[m]) / 2;
+}
+function stdevPop(a) {
+  const f = a.filter(x => x !== null && Number.isFinite(x));
+  if (f.length < 2) return null;
+  const m = f.reduce((s,x)=>s+x,0)/f.length;
+  return Math.sqrt(f.reduce((s,x)=>s+(x-m)*(x-m),0)/f.length);
+}
+
+const AV_MIN_GAP_MS = 1500;  // serial calls, ≤1 request/sec
+let _avLastCallAt = 0;
+
+function _avSleep(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+async function _avCall(fn, symbol, key) {
+  // Enforce minimum gap between any two AV requests
+  const since = Date.now() - _avLastCallAt;
+  if (since < AV_MIN_GAP_MS) await _avSleep(AV_MIN_GAP_MS - since);
+  _avLastCallAt = Date.now();
+  const url = `https://www.alphavantage.co/query?function=${fn}&symbol=${encodeURIComponent(symbol)}&apikey=${encodeURIComponent(key)}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status} on ${fn}`);
+  const j = await r.json();
+  if (j.Note) throw new Error('AV rate limit hit on ' + fn + '. Free tier is 25 calls/day, 5/minute. Try again later.');
+  if (j.Information) throw new Error('AV: ' + String(j.Information).slice(0, 240));
+  if (j['Error Message']) throw new Error('AV: ' + String(j['Error Message']).slice(0, 240));
+  return j;
+}
+
+async function _avDaily(symbol, key) {
+  const since = Date.now() - _avLastCallAt;
+  if (since < AV_MIN_GAP_MS) await _avSleep(AV_MIN_GAP_MS - since);
+  _avLastCallAt = Date.now();
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(symbol)}&outputsize=full&apikey=${encodeURIComponent(key)}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status} on TIME_SERIES_DAILY`);
+  const j = await r.json();
+  if (j.Note) throw new Error('AV rate limit on TIME_SERIES_DAILY. ' + String(j.Note).slice(0, 200));
+  if (j.Information) throw new Error('AV: ' + String(j.Information).slice(0, 240));
+  if (j['Error Message']) throw new Error('AV: ' + String(j['Error Message']).slice(0, 240));
+  return j;
+}
+
+async function fetchAlphaVantage(symbol, key, onProgress, opts) {
+  const fns = ['OVERVIEW', 'INCOME_STATEMENT', 'BALANCE_SHEET', 'CASH_FLOW', 'GLOBAL_QUOTE'];
+  const includeMomentum = !!(opts && opts.includeMomentum);
+  const total = fns.length + (includeMomentum ? 1 : 0);
+  const out = [];
+  for (let i = 0; i < fns.length; i++) {
+    if (onProgress) onProgress(fns[i], i + 1, total);
+    out.push(await _avCall(fns[i], symbol, key));
+  }
+  let daily = null;
+  if (includeMomentum) {
+    if (onProgress) onProgress('TIME_SERIES_DAILY', total, total);
+    daily = await _avDaily(symbol, key);
+  }
+  return { ov: out[0], is: out[1], bs: out[2], cf: out[3], q: out[4], daily };
+}
+
+// Parse TIME_SERIES_DAILY response into ordered price series (newest first) and compute momentum
+function computeMomentum(daily) {
+  if (!daily || !daily['Time Series (Daily)']) return null;
+  const series = daily['Time Series (Daily)'];
+  const dates = Object.keys(series).sort().reverse();  // newest first
+  if (dates.length < 252) return null;
+  const closes = dates.map(d => avNum(series[d]['4. close']));
+  const highs = dates.map(d => avNum(series[d]['2. high']) ?? avNum(series[d]['4. close']));
+
+  const today = closes[0];
+  const c1m   = closes[21];   // ~21 trading days
+  const c6m   = closes[126];
+  const c12m  = closes[252];
+
+  const mom12_1 = (c1m && c12m) ? ((c1m / c12m) - 1) * 100 : null;
+  const mom6m   = (today && c6m) ? ((today / c6m) - 1) * 100 : null;
+
+  const window52w = highs.slice(0, 252).filter(v => v !== null && v > 0);
+  const high52w = window52w.length ? Math.max(...window52w) : null;
+  const dist_52wh = (today && high52w) ? ((today / high52w) - 1) * 100 : null;
+
+  const ma200window = closes.slice(0, 200).filter(v => v !== null && v > 0);
+  const ma200 = ma200window.length === 200 ? ma200window.reduce((s,x)=>s+x, 0) / 200 : null;
+  const above_200dma = (today && ma200) ? (today > ma200 ? 1 : 0) : null;
+
+  return { mom12_1, mom6m, dist_52wh, above_200dma };
+}
+
+function parseAV(symbol, data) {
+  const { ov, is, bs, cf, q } = data;
+  if (!ov || !ov.Symbol) throw new Error('No fundamentals returned for ' + symbol);
+
+  const isRpt = (is.annualReports || []).slice(0, 5);  // most recent first
+  const bsRpt = (bs.annualReports || []).slice(0, 5);
+  const cfRpt = (cf.annualReports || []).slice(0, 5);
+  const quote = q['Global Quote'] || {};
+
+  const sector = (ov.Sector || '').trim();
+  const sectorKey = sector.toUpperCase();
+  const mktcapRaw = avNum(ov.MarketCapitalization);    // absolute dollars
+  const ebitda = avNum(ov.EBITDA);
+  const epsTTM = avNum(ov.DilutedEPSTTM) ?? avNum(ov.EPS);
+  const peg = avNum(ov.PEGRatio);
+
+  // Income statement series (index 0 = latest)
+  const rev    = isRpt.map(r => avNum(r.totalRevenue));
+  const gp     = isRpt.map(r => avNum(r.grossProfit));
+  const opInc  = isRpt.map(r => avNum(r.operatingIncome) ?? avNum(r.ebit));
+  const ni     = isRpt.map(r => avNum(r.netIncome));
+  const intExp = isRpt.map(r => avNum(r.interestExpense));
+  const incTax = isRpt.map(r => avNum(r.incomeTaxExpense));
+  const incPre = isRpt.map(r => avNum(r.incomeBeforeTax));
+
+  // Balance sheet series
+  const ta = bsRpt.map(r => avNum(r.totalAssets));
+  const ca = bsRpt.map(r => avNum(r.totalCurrentAssets));
+  const cl = bsRpt.map(r => avNum(r.totalCurrentLiabilities));
+  const cash = bsRpt.map(r => avNum(r.cashAndShortTermInvestments) ?? avNum(r.cashAndCashEquivalentsAtCarryingValue) ?? 0);
+  const stDebt = bsRpt.map(r => avNum(r.currentDebt) ?? avNum(r.shortTermDebt) ?? 0);
+  const ltDebt = bsRpt.map(r => avNum(r.longTermDebt) ?? avNum(r.longTermDebtNoncurrent) ?? 0);
+  const totalDebt = bsRpt.map((_, i) => (stDebt[i] || 0) + (ltDebt[i] || 0));
+  const tl = bsRpt.map(r => avNum(r.totalLiabilities));
+  const eq = bsRpt.map(r => avNum(r.totalShareholderEquity));
+  const re = bsRpt.map(r => avNum(r.retainedEarnings));
+  const gw = bsRpt.map(r => avNum(r.goodwill) ?? 0);
+  const sh = bsRpt.map(r => avNum(r.commonStockSharesOutstanding));
+
+  // Cash flow series
+  const ocf = cfRpt.map(r => avNum(r.operatingCashflow));
+  const capex = cfRpt.map(r => {
+    const v = avNum(r.capitalExpenditures);
+    return v === null ? null : Math.abs(v);
+  });
+  const fcf = ocf.map((o, i) => (o !== null && capex[i] !== null) ? o - capex[i] : null);
+
+  // Quote
+  const price = avNum(quote['05. price']);
+  const volume = avNum(quote['06. volume']);
+  const adv = (price !== null && volume !== null) ? (price * volume) / 1e6 : null;  // $M, single-day proxy
+
+  // ROIC per year: NOPAT / Invested Capital
+  const taxRates = incPre.map((p, i) => {
+    if (p === null || incTax[i] === null || p === 0) return 0.25;
+    return Math.min(0.4, Math.max(0, incTax[i] / p));
+  });
+  const nopat = opInc.map((o, i) => o !== null ? o * (1 - taxRates[i]) : null);
+  const ic = bsRpt.map((_, i) => (eq[i] !== null) ? eq[i] + (totalDebt[i] || 0) - (cash[i] || 0) : null);
+  const roicSeries = nopat.map((n, i) => (n !== null && ic[i] !== null && ic[i] > 0) ? (n / ic[i]) * 100 : null);
+  const roicVals = roicSeries.filter(v => v !== null);
+  const roic5y = median(roicVals);
+  const roic_yrs = roicVals.filter(r => r > 10).length;  // 10% as WACC + 3% proxy
+
+  // Gross margin CV (decimal)
+  const gms = gp.map((g, i) => (g !== null && rev[i]) ? g / rev[i] : null);
+  const gmsFiltered = gms.filter(v => v !== null);
+  const gmMean = mean(gmsFiltered);
+  const gm_cv = (gmsFiltered.length >= 2 && gmMean) ? stdevPop(gmsFiltered) / Math.abs(gmMean) : null;
+
+  // FCF margin (avg %)
+  const fcfMargins = fcf.map((f, i) => (f !== null && rev[i]) ? (f / rev[i]) * 100 : null);
+  const fcf_margin = mean(fcfMargins.filter(v => v !== null));
+
+  // Cash conversion: sum(FCF) / sum(NI) over available years
+  const fcfSum = fcf.filter(v => v !== null).reduce((s,v)=>s+v, 0);
+  const niSum  = ni.filter(v => v !== null).reduce((s,v)=>s+v, 0);
+  const cashconv = niSum ? fcfSum / niSum : null;
+
+  // OCF/NI latest
+  const ocfni = (ocf[0] !== null && ni[0]) ? ocf[0] / ni[0] : null;
+
+  // Balance sheet ratios (latest)
+  const ndebt = (ebitda && totalDebt[0]) ? (totalDebt[0] - (cash[0] || 0)) / ebitda : null;
+  const intcov = (opInc[0] !== null && intExp[0]) ? opInc[0] / intExp[0] : null;
+  const currratio = (ca[0] !== null && cl[0]) ? ca[0] / cl[0] : null;
+  const goodwill_pct = (gw[0] !== null && ta[0]) ? (gw[0] / ta[0]) * 100 : null;
+
+  // Altman Z (manufacturing/non-finance version)
+  let altman = null;
+  if (ta[0] && tl[0] && mktcapRaw && ca[0] !== null && cl[0] !== null && re[0] !== null && opInc[0] !== null && rev[0] !== null) {
+    altman = 1.2 * ((ca[0] - cl[0]) / ta[0])
+           + 1.4 * (re[0] / ta[0])
+           + 3.3 * (opInc[0] / ta[0])
+           + 0.6 * (mktcapRaw / tl[0])
+           + 1.0 * (rev[0] / ta[0]);
+  }
+
+  // Revenue CAGR (oldest to newest)
+  const revPos = rev.filter(v => v !== null && v > 0);
+  const rev_cagr = revPos.length >= 2
+    ? (Math.pow(revPos[0] / revPos[revPos.length - 1], 1 / (revPos.length - 1)) - 1) * 100
+    : null;
+
+  // Share count CAGR
+  const shPos = sh.filter(v => v !== null && v > 0);
+  const sharecagr = shPos.length >= 2
+    ? (Math.pow(shPos[0] / shPos[shPos.length - 1], 1 / (shPos.length - 1)) - 1) * 100
+    : null;
+
+  // EV/EBIT
+  const ev = mktcapRaw !== null ? mktcapRaw + (totalDebt[0] || 0) - (cash[0] || 0) : null;
+  const evebit = (ev && opInc[0]) ? ev / opInc[0] : null;
+  const fcfy = (ev && fcf[0] !== null) ? (fcf[0] / ev) * 100 : null;
+
+  // Incremental ROIC: ΔNOPAT / ΔIC across 5y
+  let incroic = null;
+  if (nopat[0] !== null && nopat[nopat.length - 1] !== null && ic[0] !== null && ic[ic.length - 1] !== null) {
+    const dN = nopat[0] - nopat[nopat.length - 1];
+    const dI = ic[0] - ic[ic.length - 1];
+    if (Math.abs(dI) > 1) incroic = (dN / dI) * 100;
+  }
+
+  const sd = SECTOR_DEFAULTS[sectorKey] || SECTOR_DEFAULTS._DEFAULT;
+
+  // IV via sector-typical PE × TTM EPS (simple anchor; user can refine)
+  const iv = (epsTTM !== null && epsTTM > 0) ? epsTTM * sd.target_pe : null;
+
+  const mom = computeMomentum(data.daily);
+
+  return {
+    ticker: symbol.toUpperCase(),
+    name: ov.Name || symbol,
+    sector,
+    mktcap: mktcapRaw !== null ? mktcapRaw / 1e6 : null,  // store as $M
+    adv,
+    mom12_1: mom ? mom.mom12_1 : null,
+    mom6m:   mom ? mom.mom6m   : null,
+    dist_52wh: mom ? mom.dist_52wh : null,
+    above_200dma: mom ? mom.above_200dma : null,
+    rs_index: GENERIC_DEFAULTS.rs_index,
+    eps_rev:  GENERIC_DEFAULTS.eps_rev,
+    roic5y, roic_yrs,
+    gm_cv,
+    fcf_margin, cashconv,
+    ndebt, intcov, currratio, altman,
+    beneish: GENERIC_DEFAULTS.beneish,
+    incroic, sharecagr,
+    acq_fcf: GENERIC_DEFAULTS.acq_fcf,
+    rev_cagr,
+    topcust: GENERIC_DEFAULTS.topcust,
+    evebit,
+    evebit_pct: GENERIC_DEFAULTS.evebit_pct,
+    fcfy, peg,
+    rdcf_ratio: GENERIC_DEFAULTS.rdcf_ratio,
+    acqmul_pct: GENERIC_DEFAULTS.acqmul_pct,
+    iv, price,
+    accruals: GENERIC_DEFAULTS.accruals,
+    dso: GENERIC_DEFAULTS.dso,
+    ocfni,
+    goodwill: goodwill_pct,
+    insider: GENERIC_DEFAULTS.insider,
+    short: GENERIC_DEFAULTS.short,
+    auditor_chg: GENERIC_DEFAULTS.auditor_chg,
+    restate: GENERIC_DEFAULTS.restate,
+    bull_irr: sd.bull_irr, bull_p: sd.bull_p,
+    base_irr: sd.base_irr, base_p: sd.base_p,
+    bear_irr: sd.bear_irr, bear_p: sd.bear_p,
+    moat: sd.moat,
+    mgmt_own: GENERIC_DEFAULTS.mgmt_own,
+    turnover: GENERIC_DEFAULTS.turnover,
+    _fetched: Date.now(),
+  };
+}
+
+const CACHE_PREFIX = 'qvs.cache.';
+const CACHE_TTL_MS = 90 * 24 * 60 * 60 * 1000;  // 90 days
+
+async function handleFetch(symbol, key, onProgress, opts) {
+  const sym = symbol.trim().toUpperCase();
+  if (!sym) throw new Error('Enter a ticker.');
+  if (!key) throw new Error('Set your Alpha Vantage API key first.');
+  const includeMomentum = !!(opts && opts.includeMomentum);
+  const cacheKey = CACHE_PREFIX + sym;
+  let raw;
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      const fresh = Date.now() - parsed.fetchedAt < CACHE_TTL_MS;
+      const hasMomentum = !!(parsed.data && parsed.data.daily);
+      if (fresh && (!includeMomentum || hasMomentum)) raw = parsed.data;
+    }
+  } catch (e) {}
+  let fromCache = !!raw;
+  if (!raw) {
+    raw = await fetchAlphaVantage(sym, key, onProgress, { includeMomentum });
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify({ fetchedAt: Date.now(), data: raw }));
+    } catch (e) {}
+  }
+  const ticker = parseAV(sym, raw);
+  return { ticker, fromCache };
+}
+
+// =============================================================================
+// STATE
+// =============================================================================
+
+const STORAGE_KEY = 'qvs.state.v1';
+
+const defaultState = () => ({
+  theme: 'light',
+  school: 'Quality + Value',
+  profile: 'Standard',
+  overrides: {},      // criterion key -> override value
+  tickers: SAMPLE_TICKERS.map(t => ({ ...t })),
+  activeTab: 'setup',
+  avKey: '',          // Alpha Vantage API key
+});
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+  } catch(e) {}
+  return defaultState();
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// =============================================================================
+// LOOKUPS / FORMATTING
+// =============================================================================
+
+function activeThreshold(key) {
+  const o = state.overrides[key];
+  if (o !== undefined && o !== '' && o !== null && !Number.isNaN(Number(o))) {
+    return Number(o);
+  }
+  return PROFILES[state.profile][key];
+}
+
+function fmt(value, type) {
+  if (value === null || value === undefined || value === '' || Number.isNaN(value)) return '—';
+  const n = Number(value);
+  if (type === 'pct')   return n.toFixed(1).replace(/\.0$/, '.0') + '%';
+  if (type === 'pct0')  return Math.round(n) + '%';
+  if (type === 'n0')    return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  if (type === 'n1')    return n.toFixed(1);
+  if (type === 'n2')    return n.toFixed(2);
+  if (type === 'mone') {
+    if (Math.abs(n) >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    return n.toFixed(2);
+  }
+  return String(value);
+}
+
+function fmtByKey(key, val) {
+  const it = CRIT_BY_KEY[key];
+  return fmt(val, it ? it.fmt : 'n2');
+}
+
+function parseNumber(v) {
+  if (v === null || v === undefined || v === '') return null;
+  if (typeof v === 'number') return v;
+  const cleaned = String(v).replace(/,/g,'').replace(/%/g,'').trim();
+  if (cleaned === '' || cleaned === '-') return null;
+  const n = Number(cleaned);
+  return Number.isNaN(n) ? null : n;
+}
+
+// =============================================================================
+// COMPUTATIONS
+// =============================================================================
+
+// Returns true / false / null (null if insufficient input)
+function gatePass(value, threshold, comp) {
+  const v = parseNumber(value);
+  const t = parseNumber(threshold);
+  if (v === null || t === null) return null;
+  return comp === 'min' ? v >= t : v <= t;
+}
+
+function ynPass(val) {
+  if (!val) return null;
+  const v = String(val).trim().toUpperCase();
+  if (v === 'N') return true;
+  if (v === 'Y') return false;
+  return null;
+}
+
+function evalUniverse(t) {
+  return UNIVERSE_GATES.map(g => ({
+    ...g,
+    pass: gatePass(t[g.metric], activeThreshold(g.thr), CRIT_BY_KEY[g.thr].comp),
+    value: parseNumber(t[g.metric]),
+    threshold: activeThreshold(g.thr),
+  }));
+}
+function evalQuality(t) {
+  return QUALITY_GATES.map(g => ({
+    ...g,
+    pass: gatePass(t[g.metric], activeThreshold(g.thr), CRIT_BY_KEY[g.thr].comp),
+    value: parseNumber(t[g.metric]),
+    threshold: activeThreshold(g.thr),
+  }));
+}
+function evalValuation(t) {
+  return VALUATION_GATES.map(g => ({
+    ...g,
+    pass: gatePass(t[g.metric], activeThreshold(g.thr), CRIT_BY_KEY[g.thr].comp),
+    value: parseNumber(t[g.metric]),
+    threshold: activeThreshold(g.thr),
+  }));
+}
+function evalRedFlags(t) {
+  const num = REDFLAG_GATES.map(g => ({
+    ...g,
+    pass: gatePass(t[g.metric], activeThreshold(g.thr), CRIT_BY_KEY[g.thr].comp),
+    value: parseNumber(t[g.metric]),
+    threshold: activeThreshold(g.thr),
+  }));
+  const yn = REDFLAG_YN_GATES.map(g => ({
+    ...g,
+    pass: ynPass(t[g.metric]),
+    value: t[g.metric],
+    threshold: 'N',
+  }));
+  return [...num, ...yn];
+}
+
+function MoS(t) {
+  const iv = parseNumber(t.iv), px = parseNumber(t.price);
+  if (iv === null || px === null || iv === 0) return null;
+  return ((iv - px) / iv) * 100;  // percent
+}
+
+function expectedIRR(t) {
+  const bi = parseNumber(t.bull_irr), bp = parseNumber(t.bull_p);
+  const xi = parseNumber(t.base_irr), xp = parseNumber(t.base_p);
+  const ri = parseNumber(t.bear_irr), rp = parseNumber(t.bear_p);
+  if ([bi, bp, xi, xp, ri, rp].some(v => v === null)) return null;
+  const sumP = bp + xp + rp;
+  if (Math.abs(sumP - 100) > 1) return 'P≠100%';
+  return (bi*bp + xi*xp + ri*rp) / 100;
+}
+
+function winStats(t) {
+  // p (win probability) = sum of probs where IRR > 0
+  // b (win/loss ratio) = expected positive return / |expected negative return|
+  const rows = [
+    [parseNumber(t.bull_irr), parseNumber(t.bull_p)],
+    [parseNumber(t.base_irr), parseNumber(t.base_p)],
+    [parseNumber(t.bear_irr), parseNumber(t.bear_p)],
+  ];
+  if (rows.some(r => r[0] === null || r[1] === null)) return null;
+  let p = 0, gain = 0, loss = 0;
+  rows.forEach(([irr, prob]) => {
+    const w = prob / 100;
+    if (irr > 0) { p += w; gain += irr * w; }
+    else if (irr < 0) { loss += -irr * w; }
+  });
+  const b = loss === 0 ? 3 : gain / loss;  // fallback when no loss scenario
+  return { p, b };
+}
+
+function kellyFraction(t) {
+  const ws = winStats(t);
+  if (!ws) return null;
+  const { p, b } = ws;
+  if (b <= 0) return 0;
+  return Math.max(0, (p * b - (1 - p)) / b);
+}
+
+function passCount(arr) { return arr.filter(g => g.pass === true).length; }
+function totalEvaluable(arr) { return arr.filter(g => g.pass !== null).length; }
+
+function stageResult(arr) {
+  const ev = totalEvaluable(arr);
+  if (ev === 0) return null;
+  const passes = passCount(arr);
+  // Pass iff every gate we could evaluate cleared. Null gates are skipped (insufficient data).
+  return passes === ev ? 'PASS' : 'FAIL';
+}
+
+function valuationResult(t) {
+  const arr = evalValuation(t);
+  const ev = totalEvaluable(arr);
+  if (ev === 0) return { result: null, passes: 0, mos: MoS(t), mosOk: null };
+  const passes = passCount(arr);
+  const minPass = activeThreshold('val_passes_min');
+  const mos = MoS(t);
+  const mosMin = activeThreshold('mos_min');
+  const mosOk = mos === null ? null : mos >= mosMin;
+  const result = (passes >= minPass && mosOk === true) ? 'PASS' : 'FAIL';
+  return { result, passes, mos, mosOk };
+}
+
+function evalMomentum(t) {
+  return MOMENTUM_GATES.map(g => ({
+    ...g,
+    pass: gatePass(t[g.metric], activeThreshold(g.thr), CRIT_BY_KEY[g.thr].comp),
+    value: parseNumber(t[g.metric]),
+    threshold: activeThreshold(g.thr),
+  }));
+}
+
+function momentumResult(t) {
+  const arr = evalMomentum(t);
+  const ev = totalEvaluable(arr);
+  if (ev === 0) return { result: null, passes: 0 };
+  const passes = passCount(arr);
+  const minPass = activeThreshold('mom_passes_min');
+  const result = passes >= minPass ? 'PASS' : 'FAIL';
+  return { result, passes };
+}
+
+function summarize(t) {
+  const uni = evalUniverse(t);
+  const qua = evalQuality(t);
+  const val = valuationResult(t);
+  const mom = momentumResult(t);
+  const rf = evalRedFlags(t);
+  const eirr = expectedIRR(t);
+  const uniRes = stageResult(uni);
+  const quaRes = stageResult(qua);
+  const valRes = val.result;
+  const momRes = mom.result;
+  const rfRes = stageResult(rf);
+  let irrRes = null;
+  if (eirr !== null && eirr !== 'P≠100%') {
+    irrRes = eirr >= activeThreshold('eirr_min') ? 'PASS' : 'FAIL';
+  } else if (eirr === 'P≠100%') {
+    irrRes = 'FAIL';
+  }
+  const stageMap = { universe: uniRes, quality: quaRes, valuation: valRes, momentum: momRes, redflags: rfRes, scenario: irrRes };
+  const active = schoolStages();
+  const activeResults = active.map(s => stageMap[s]);
+  const stagesPassed = activeResults.filter(s => s === 'PASS').length;
+  const stagesEval = activeResults.filter(s => s !== null).length;
+  let overall = null;
+  if (stagesEval === active.length) {
+    overall = stagesPassed === active.length ? 'BUY' : stagesPassed >= active.length - 1 ? 'WATCH' : 'REJECT';
+  }
+  return { uni, qua, val, mom, rf, eirr, irrRes, uniRes, quaRes, valRes, momRes, rfRes, stagesPassed, stagesEval, overall, activeStages: active, stageResults: stageMap };
+}
+
+// =============================================================================
+// RENDERING — utilities
+// =============================================================================
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => [...document.querySelectorAll(sel)];
+
+// Reusable ticker cell with an inline refresh button (visible on row hover).
+// The button hooks into the global click delegate below.
+function tickerCell(t) {
+  const sym = safeText((t && t.ticker) || '');
+  if (!sym) return `<td class="ticker"></td>`;
+  return `<td class="ticker"><span class="ticker-with-refresh">${sym}<button class="refresh-btn" data-refetch="${sym}" title="Refetch ${sym} from Alpha Vantage" aria-label="Refetch ${sym}">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><polyline points="13.5 2 13.5 5.5 10 5.5"/>
+    </svg>
+  </button></span></td>`;
+}
+
+// Toast helper — used when refetch is triggered from a non-Inputs tab
+let _toastEl = null;
+let _toastTimer = null;
+function showToast(text, kind /* 'loading'|'success'|'error' */) {
+  if (!_toastEl) {
+    _toastEl = document.createElement('div');
+    _toastEl.className = 'fetch-toast';
+    document.body.appendChild(_toastEl);
+  }
+  _toastEl.className = 'fetch-toast show' + (kind ? ' ' + kind : '');
+  const icon = kind === 'loading' ? '<span class="spinner"></span>' : kind === 'success' ? '✓' : kind === 'error' ? '✕' : '';
+  _toastEl.innerHTML = `${icon}<span>${safeText(text)}</span>`;
+  if (_toastTimer) clearTimeout(_toastTimer);
+  if (kind !== 'loading') {
+    _toastTimer = setTimeout(() => { if (_toastEl) _toastEl.classList.remove('show'); }, 3500);
+  }
+}
+
+// Refetch a ticker from anywhere in the app
+async function refetchTickerSymbol(symbol, btn) {
+  const sym = String(symbol || '').trim().toUpperCase();
+  if (!sym) return;
+  if (!state.avKey) {
+    if (btn) { btn.classList.add('error'); btn.title = 'Set your Alpha Vantage key on the Inputs tab.'; setTimeout(() => btn.classList.remove('error'), 4000); }
+    showToast('Add your Alpha Vantage key on the Inputs tab.', 'error');
+    return;
+  }
+  if (btn) { btn.classList.remove('error'); btn.classList.add('spinning'); }
+  showToast(`Refetching ${sym}…`, 'loading');
+  // Clear cache so we go to network
+  try { localStorage.removeItem(CACHE_PREFIX + sym); } catch (_) {}
+  try {
+    const onProgress = (fn, n, total) => showToast(`Refetching ${sym} · ${fn} (${n}/${total})…`, 'loading');
+    const { ticker } = await handleFetch(sym, state.avKey, onProgress, { includeMomentum: schoolUses('momentum') });
+    const idx = state.tickers.findIndex(t => (t.ticker || '').toUpperCase() === sym);
+    if (idx >= 0) state.tickers[idx] = ticker; else state.tickers.unshift(ticker);
+    saveState();
+    const s = summarize(ticker);
+    showToast(`✓ ${sym} · ${ticker.sector || 'Unknown'} · ${s.overall || '—'}`, 'success');
+    renderActive();
+  } catch (err) {
+    if (btn) { btn.classList.remove('spinning'); btn.classList.add('error'); btn.title = err.message; setTimeout(() => btn.classList.remove('error'), 5000); }
+    showToast('✕ ' + (err.message || 'Fetch failed'), 'error');
+  }
+}
+
+// Global click delegate for [data-refetch] elements (works on every panel)
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-refetch]');
+  if (!btn) return;
+  e.preventDefault();
+  refetchTickerSymbol(btn.dataset.refetch, btn);
+});
+
+// Reverse lookup: metric key -> threshold criterion key (so input cells can show their target)
+const METRIC_TO_THR = (() => {
+  const m = {};
+  CRITERIA.forEach(sec => sec.items.forEach(it => {
+    const base = it.key.replace(/_(min|max)$/, '');
+    if (METRIC_DEFINITIONS[base] && !m[base]) m[base] = it.key;
+  }));
+  m.rdcf_ratio = 'rdcf_max';
+  return m;
+})();
+
+function inputCellTooltip(metricKey) {
+  const def = METRIC_DEFINITIONS[metricKey] || '';
+  const thrKey = METRIC_TO_THR[metricKey];
+  if (!thrKey) return def;
+  const crit = CRIT_BY_KEY[thrKey];
+  if (!crit) return def;
+  const op = crit.comp === 'min' ? '≥' : '≤';
+  const val = activeThreshold(thrKey);
+  return `${def}\n\nThreshold (${state.profile}): ${op} ${fmt(val, crit.fmt)}`.trim();
+}
+
+function gateTooltip(gateEval) {
+  const def = METRIC_DEFINITIONS[gateEval.metric] || '';
+  const isYN = gateEval.thr === undefined;
+  let actual, required;
+  if (isYN) {
+    actual = gateEval.value ? String(gateEval.value).toUpperCase() : 'n/a';
+    required = 'N (no flag)';
+  } else {
+    const crit = CRIT_BY_KEY[gateEval.thr];
+    const cfmt = crit ? crit.fmt : 'n2';
+    actual = (gateEval.value === null || gateEval.value === undefined) ? 'n/a' : fmt(gateEval.value, cfmt);
+    const op = crit && crit.comp === 'min' ? '≥' : '≤';
+    required = `${op} ${fmt(gateEval.threshold, cfmt)}`;
+  }
+  return `${def}\n\nActual: ${actual}\nRequired: ${required}`.trim();
+}
+
+function gateCell(gateEval) {
+  // Back-compat: if a bare bool/null was passed, render without tooltip
+  if (gateEval === null || gateEval === undefined || typeof gateEval === 'boolean') {
+    const pass = gateEval;
+    if (pass === null || pass === undefined) return `<td class="gate empty">·</td>`;
+    return pass ? `<td class="gate pass">✓</td>` : `<td class="gate fail">✕</td>`;
+  }
+  const tip = safeText(gateTooltip(gateEval));
+  if (gateEval.pass === null || gateEval.pass === undefined) {
+    return `<td class="gate empty" title="${tip}">·</td>`;
+  }
+  return gateEval.pass
+    ? `<td class="gate pass" title="${tip}">✓</td>`
+    : `<td class="gate fail" title="${tip}">✕</td>`;
+}
+
+function pillFor(status) {
+  if (status === 'PASS') return `<span class="pill pass">Pass</span>`;
+  if (status === 'FAIL') return `<span class="pill fail">Fail</span>`;
+  if (status === 'BUY')   return `<span class="pill buy">Buy</span>`;
+  if (status === 'WATCH') return `<span class="pill watch">Watch</span>`;
+  if (status === 'REJECT')return `<span class="pill reject">Reject</span>`;
+  return `<span class="pill empty">—</span>`;
+}
+
+function safeText(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+// =============================================================================
+// RENDERING — Setup
+// =============================================================================
+
+function renderSetup() {
+  const root = $('#panel-setup');
+  const profIdx = PROFILE_NAMES.indexOf(state.profile);
+
+  const headerCols = `
+    <div class="label">Criterion</div>
+    <div>Active</div>
+    <div>Override</div>
+    <div>Default</div>
+    ${PROFILE_NAMES.map(p => `<div class="profile-col">${p}</div>`).join('')}
+    <div class="note-h">Notes</div>`;
+
+  const rows = CRITERIA.map(sec => {
+    let html = `<div class="setup-section">${sec.section} <em>${sec.items.length} criterion${sec.items.length===1?'':'a'}</em></div>`;
+    html += sec.items.map(it => {
+      const def = PROFILES[state.profile][it.key];
+      const ov = state.overrides[it.key];
+      const active = (ov !== undefined && ov !== '' && ov !== null && !Number.isNaN(Number(ov))) ? Number(ov) : def;
+      const profCells = PROFILE_NAMES.map((p, i) => {
+        const cls = (i === profIdx) ? 'num profcol active' : 'num profcol';
+        return `<div class="${cls} profile-col">${fmt(it.values[i], it.fmt)}</div>`;
+      }).join('');
+      const ovStr = (ov === undefined || ov === null || ov === '') ? '' : ov;
+      const rowTip = safeText(defFor(it.key));
+      return `
+        <div class="setup-row" data-key="${it.key}" title="${rowTip}">
+          <div class="label" title="${rowTip}">${safeText(it.label)}</div>
+          <div class="num active">${fmt(active, it.fmt)}</div>
+          <div class="override-cell">
+            <input type="text" class="cell override-input" data-override="${it.key}"
+                   value="${safeText(ovStr)}" placeholder="—"/>
+          </div>
+          <div class="num default">${fmt(def, it.fmt)}</div>
+          ${profCells}
+          <div class="note">${safeText(it.note || '')}</div>
+        </div>`;
+    }).join('');
+    return html;
+  }).join('');
+
+  root.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="stage">Control Panel</div>
+        <h2><em>Active</em> profile & thresholds</h2>
+        <p>Switch profiles via the header pill. Override any threshold in the highlighted column to customize without editing the profile defaults.</p>
+      </div>
+      <div class="panel-actions">
+        <button class="btn subtle" id="clearOverrides">Clear overrides</button>
+        <button class="btn" id="resetAll">Reset all</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="setup-header-row">${headerCols}</div>
+      ${rows}
+    </div>`;
+
+  // Wire override inputs
+  root.querySelectorAll('input[data-override]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const k = e.target.dataset.override;
+      const v = e.target.value.trim();
+      if (v === '') {
+        delete state.overrides[k];
+      } else if (!Number.isNaN(Number(v.replace(/,/g,'').replace(/%/g,'')))) {
+        state.overrides[k] = Number(v.replace(/,/g,'').replace(/%/g,''));
+      } else {
+        state.overrides[k] = v;
+      }
+      saveState();
+      // Update only the Active cell on the same row (don't rerender entire panel — keeps focus)
+      const row = e.target.closest('.setup-row');
+      const it = CRIT_BY_KEY[k];
+      const def = PROFILES[state.profile][k];
+      const ov = state.overrides[k];
+      const active = (ov !== undefined && ov !== '' && ov !== null && !Number.isNaN(Number(ov))) ? Number(ov) : def;
+      row.querySelector('.num.active').textContent = fmt(active, it.fmt);
+    });
+  });
+  $('#clearOverrides').addEventListener('click', () => {
+    state.overrides = {};
+    saveState(); renderSetup();
+  });
+  $('#resetAll').addEventListener('click', () => {
+    if (!confirm('Reset profile, overrides, and all ticker data?')) return;
+    state = defaultState();
+    saveState();
+    initProfileSelect();
+    render();
+  });
+}
+
+// =============================================================================
+// RENDERING — Inputs
+// =============================================================================
+
+function renderInputs() {
+  const root = $('#panel-inputs');
+  const groupHead = INPUT_GROUPS.map(g =>
+    `<th class="group" colspan="${g.items.length}">${g.group}</th>`).join('');
+  const colHead = INPUT_GROUPS.map(g =>
+    g.items.map(f => {
+      const def = METRIC_DEFINITIONS[f.key] || '';
+      return `<th class="${f.type === 'text' ? 'left' : 'numeric'}" title="${safeText(def)}">${safeText(f.label)}</th>`;
+    }).join('')).join('');
+
+  const rows = state.tickers.map((t, idx) => {
+    const cells = INPUT_GROUPS.map(g => g.items.map(f => {
+      const v = t[f.key];
+      const vStr = (v === null || v === undefined) ? '' : v;
+      const tip = safeText(inputCellTooltip(f.key));
+      if (f.type === 'text') {
+        return `<td title="${tip}"><input type="text" class="cell text" data-row="${idx}" data-key="${f.key}" value="${safeText(vStr)}" title="${tip}"/></td>`;
+      }
+      if (f.type === 'yn') {
+        return `<td title="${tip}"><select class="cell" data-row="${idx}" data-key="${f.key}" title="${tip}">
+          <option value=""${vStr===''?' selected':''}>—</option>
+          <option value="N"${vStr==='N'?' selected':''}>N</option>
+          <option value="Y"${vStr==='Y'?' selected':''}>Y</option>
+        </select></td>`;
+      }
+      if (f.type === 'moat') {
+        return `<td title="${tip}"><select class="cell" data-row="${idx}" data-key="${f.key}" title="${tip}">
+          <option value=""${!vStr?' selected':''}>—</option>
+          <option value="Wide"${vStr==='Wide'?' selected':''}>Wide</option>
+          <option value="Narrow"${vStr==='Narrow'?' selected':''}>Narrow</option>
+          <option value="None"${vStr==='None'?' selected':''}>None</option>
+        </select></td>`;
+      }
+      // Display numeric values with one decimal where appropriate, otherwise raw
+      let display = vStr;
+      if (typeof v === 'number') {
+        display = Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2).replace(/\.?0+$/, '');
+      }
+      return `<td title="${tip}"><input type="text" class="cell" data-row="${idx}" data-key="${f.key}" value="${safeText(display)}" title="${tip}"/></td>`;
+    }).join('')).join('');
+    const s = summarize(t);
+    const fetchedTag = t._fetched ? `<td class="row-meta fetched" title="Fetched from Alpha Vantage">AV</td>` : `<td class="row-meta">—</td>`;
+    return `<tr data-row="${idx}">
+      <td class="idx">${idx+1}</td>
+      ${fetchedTag}
+      ${cells}
+      <td class="verdict-cell" data-verdict="${idx}">${pillFor(s.overall)}</td>
+      <td class="row-actions">
+        ${t.ticker ? `<button class="refresh-btn" data-refetch="${safeText(t.ticker)}" title="Refetch ${safeText(t.ticker)} from Alpha Vantage" aria-label="Refetch ticker" style="margin-right:4px;display:inline-grid">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><polyline points="13.5 2 13.5 5.5 10 5.5"/>
+          </svg>
+        </button>` : ''}
+        <button class="row-remove" data-action="remove" data-row="${idx}" title="Remove ${safeText(t.ticker || 'this row')}" aria-label="Remove ticker">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M3 4h10M6.5 4V2.5h3V4M5 4l.5 9.5h5L11 4M6.5 6.5v5M9.5 6.5v5"/>
+          </svg>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Live counters
+  const verdicts = state.tickers.map(t => summarize(t).overall);
+  const buys = verdicts.filter(v => v === 'BUY').length;
+  const watches = verdicts.filter(v => v === 'WATCH').length;
+  const rejects = verdicts.filter(v => v === 'REJECT').length;
+
+  root.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="stage">Fundamentals</div>
+        <h2><em>Live</em> scoring</h2>
+        <p>Type a ticker and press Enter — fundamentals fetch from Alpha Vantage, judgment fields auto-fill from sector medians, and every gate scores in real time. Edit any cell to refine.</p>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><div class="k">Tickers</div><div class="v mono" id="statTickers">${state.tickers.length}</div></div>
+      <div class="stat"><div class="k">Buy</div><div class="v mono pass" id="statBuy">${buys}</div></div>
+      <div class="stat"><div class="k">Watch</div><div class="v mono" style="color:var(--warn)" id="statWatch">${watches}</div></div>
+      <div class="stat"><div class="k">Reject</div><div class="v mono fail" id="statReject">${rejects}</div></div>
+      <div class="stat"><div class="k">Profile</div><div class="v"><em>${state.profile}</em></div></div>
+    </div>
+
+    <div class="card">
+      <div class="fetch-bar">
+        <div class="group">
+          <label>Ticker</label>
+          <input type="text" class="field ticker" id="tickerInput" placeholder="AAPL" autocomplete="off" spellcheck="false"/>
+          <button class="btn primary" id="fetchBtn">Fetch & score →</button>
+        </div>
+        <div class="fetch-status" id="fetchStatus"></div>
+        <div class="spacer"></div>
+        <div class="group">
+          <label>AV Key</label>
+          <input type="password" class="field apikey" id="avKey" placeholder="paste once, saved locally" autocomplete="off" value="${safeText(state.avKey || '')}"/>
+          <a class="help" href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener">free key ↗</a>
+        </div>
+      </div>
+      <div class="fetch-bar" style="border-top:0; padding-top:8px; padding-bottom:8px;">
+        <div class="meta"><strong>Cache:</strong> 30 days per ticker · <strong>Free tier:</strong> 25 calls/day, 5/min · <strong>5 calls</strong> per fetch · use the ↻ button on any row to force a fresh fetch</div>
+        <div class="spacer"></div>
+        <div class="group">
+          <button class="btn subtle" id="loadSample">Sample data</button>
+          <button class="btn subtle" id="addTicker">+ Blank row</button>
+          <button class="btn subtle" id="exportCsv">Export</button>
+          <button class="btn subtle" id="importCsv">Import</button>
+          <button class="btn subtle" id="removeRejects" title="Remove all tickers with REJECT verdict">Remove rejects</button>
+          <button class="btn danger" id="clearAll">Clear all</button>
+          <input id="csvFile" type="file" accept=".csv" style="display:none"/>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th></th><th></th>${groupHead}<th></th><th></th></tr>
+            <tr><th class="idx">#</th><th class="row-meta">Src</th>${colHead}<th>Verdict</th><th></th></tr>
+          </thead>
+          <tbody>${rows || `<tr><td colspan="60" class="empty-state"><div class="title">No tickers yet</div>Type a ticker above and press Enter.</td></tr>`}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  wireInputsEvents(root);
+}
+
+function wireInputsEvents(root) {
+  // Cell edits
+  root.querySelectorAll('input.cell, select.cell').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const row = Number(e.target.dataset.row);
+      const key = e.target.dataset.key;
+      const val = e.target.value;
+      const f = INPUT_GROUPS.flatMap(g => g.items).find(it => it.key === key);
+      if (f && f.type !== 'text' && f.type !== 'yn' && f.type !== 'moat') {
+        state.tickers[row][key] = parseNumber(val);
+      } else {
+        state.tickers[row][key] = val === '' ? null : val;
+      }
+      saveState();
+      refreshVerdict(row);
+      refreshInputsStats();
+    });
+  });
+
+  // Remove row (and its AV cache so a re-fetch is fresh)
+  root.querySelectorAll('button[data-action="remove"]').forEach(b => {
+    b.addEventListener('click', e => {
+      const idx = Number(e.currentTarget.dataset.row);
+      const removed = state.tickers[idx];
+      const sym = (removed?.ticker || '').toUpperCase();
+      state.tickers.splice(idx, 1);
+      if (sym) { try { localStorage.removeItem(CACHE_PREFIX + sym); } catch(_) {} }
+      saveState();
+      renderInputs();
+    });
+  });
+
+  // API key
+  $('#avKey').addEventListener('input', e => {
+    state.avKey = e.target.value.trim();
+    saveState();
+  });
+
+  // Ticker fetch
+  const doFetch = async () => {
+    const tickerInput = $('#tickerInput');
+    const symbol = (tickerInput.value || '').trim().toUpperCase();
+    const status = $('#fetchStatus');
+    if (!symbol) { status.className = 'fetch-status error'; status.textContent = 'Enter a ticker symbol.'; return; }
+    if (!state.avKey) { status.className = 'fetch-status error'; status.textContent = 'Add your Alpha Vantage key on the right →'; return; }
+    status.className = 'fetch-status loading';
+    status.textContent = `Fetching ${symbol}…`;
+    try {
+      const onProgress = (fn, n, total) => {
+        status.textContent = `Fetching ${symbol} · ${fn} (${n}/${total})…`;
+      };
+      const { ticker, fromCache } = await handleFetch(symbol, state.avKey, onProgress, { includeMomentum: schoolUses('momentum') });
+      const existing = state.tickers.findIndex(t => (t.ticker || '').toUpperCase() === symbol);
+      if (existing >= 0) {
+        state.tickers[existing] = ticker;
+      } else {
+        state.tickers.unshift(ticker);
+      }
+      saveState();
+      const s = summarize(ticker);
+      status.className = 'fetch-status success';
+      const verdict = s.overall || 'NO VERDICT';
+      const tag = fromCache ? ' (cached)' : '';
+      status.textContent = `✓ ${symbol} · ${ticker.sector || 'Unknown sector'} · ${verdict}${tag}`;
+      tickerInput.value = '';
+      renderInputs();
+    } catch (err) {
+      status.className = 'fetch-status error';
+      status.textContent = '✕ ' + (err.message || 'Fetch failed');
+    }
+  };
+  $('#fetchBtn').addEventListener('click', doFetch);
+  $('#tickerInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); doFetch(); }
+  });
+  // Auto-focus ticker input for quick entry
+  setTimeout(() => $('#tickerInput')?.focus(), 50);
+
+  // Other buttons
+  $('#addTicker').addEventListener('click', () => {
+    const blank = {}; INPUT_KEYS.forEach(k => blank[k] = null);
+    blank.ticker = ''; blank.name = ''; blank.sector = '';
+    state.tickers.push(blank);
+    saveState(); renderInputs();
+  });
+  $('#loadSample').addEventListener('click', () => {
+    if (state.tickers.length && !confirm('Replace existing tickers with sample data?')) return;
+    state.tickers = SAMPLE_TICKERS.map(t => ({ ...t }));
+    saveState(); renderInputs();
+  });
+  $('#removeRejects').addEventListener('click', () => {
+    const keep = [];
+    const dropped = [];
+    state.tickers.forEach(t => {
+      if (summarize(t).overall === 'REJECT') dropped.push(t); else keep.push(t);
+    });
+    if (!dropped.length) {
+      const status = $('#fetchStatus');
+      status.className = 'fetch-status';
+      status.textContent = 'No rejected tickers to remove.';
+      return;
+    }
+    if (!confirm(`Remove ${dropped.length} rejected ticker(s)?`)) return;
+    dropped.forEach(t => {
+      const sym = (t.ticker || '').toUpperCase();
+      if (sym) { try { localStorage.removeItem(CACHE_PREFIX + sym); } catch(_) {} }
+    });
+    state.tickers = keep;
+    saveState(); renderInputs();
+  });
+  $('#clearAll').addEventListener('click', () => {
+    if (!confirm('Clear all ticker rows?')) return;
+    // Also purge AV caches so subsequent fetches are fresh
+    state.tickers.forEach(t => {
+      const sym = (t.ticker || '').toUpperCase();
+      if (sym) { try { localStorage.removeItem(CACHE_PREFIX + sym); } catch(_) {} }
+    });
+    state.tickers = [];
+    saveState(); renderInputs();
+  });
+  $('#exportCsv').addEventListener('click', exportCsv);
+  $('#importCsv').addEventListener('click', () => $('#csvFile').click());
+  $('#csvFile').addEventListener('change', importCsv);
+}
+
+function refreshVerdict(rowIdx) {
+  const cell = document.querySelector(`#panel-inputs td[data-verdict="${rowIdx}"]`);
+  if (!cell) return;
+  const s = summarize(state.tickers[rowIdx]);
+  cell.innerHTML = pillFor(s.overall);
+}
+
+function refreshInputsStats() {
+  const verdicts = state.tickers.map(t => summarize(t).overall);
+  const buys = verdicts.filter(v => v === 'BUY').length;
+  const watches = verdicts.filter(v => v === 'WATCH').length;
+  const rejects = verdicts.filter(v => v === 'REJECT').length;
+  const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setText('statTickers', state.tickers.length);
+  setText('statBuy', buys);
+  setText('statWatch', watches);
+  setText('statReject', rejects);
+}
+
+function exportCsv() {
+  const fields = INPUT_KEYS;
+  const lines = [fields.join(',')];
+  state.tickers.forEach(t => {
+    lines.push(fields.map(k => {
+      const v = t[k];
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      return /[,"\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'tickers.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importCsv(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const text = reader.result;
+    const rows = parseCsv(text);
+    if (rows.length < 2) { alert('CSV must have header + at least one row.'); return; }
+    const header = rows[0];
+    const newTickers = rows.slice(1).map(cols => {
+      const t = {};
+      INPUT_KEYS.forEach(k => t[k] = null);
+      header.forEach((h, i) => {
+        if (INPUT_KEYS.includes(h)) {
+          const v = cols[i];
+          const f = INPUT_GROUPS.flatMap(g=>g.items).find(it=>it.key===h);
+          if (f && f.type !== 'text' && f.type !== 'yn' && f.type !== 'moat') {
+            t[h] = parseNumber(v);
+          } else {
+            t[h] = v || null;
+          }
+        }
+      });
+      return t;
+    });
+    if (!confirm(`Replace ${state.tickers.length} ticker(s) with ${newTickers.length} imported?`)) return;
+    state.tickers = newTickers;
+    saveState(); renderInputs();
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [], cell = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"' && text[i+1] === '"') { cell += '"'; i++; }
+      else if (c === '"') { inQ = false; }
+      else cell += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if (c === '\r') {}
+      else cell += c;
+    }
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+// =============================================================================
+// RENDERING — Scoring sheets (Quality / Valuation / Red Flags / Scenario)
+// =============================================================================
+
+function renderScoring(tab) {
+  const root = $(`#panel-${tab}`);
+  let title, sub, stage, gates, ynGates = [], extraCol = null;
+  if (tab === 'quality') {
+    title = `<em>Quality</em> screen`; stage = 'Stage 1 + 2'; sub = 'Universe filters plus profitability, balance-sheet, capital-allocation and durability gates. A ticker passes only when every gate clears.';
+    gates = [...UNIVERSE_GATES.map(g => ({ ...g, group: 'Universe' })), ...QUALITY_GATES.map(g => ({ ...g, group: 'Quality' }))];
+  } else if (tab === 'valuation') {
+    title = `<em>Valuation</em> screen`; stage = 'Stage 3'; sub = 'Six lenses on price. Requires N passes (per profile) plus minimum Margin of Safety vs. your intrinsic value.';
+    gates = VALUATION_GATES.map(g => ({ ...g, group: 'Valuation' }));
+  } else if (tab === 'redflags') {
+    title = `Red <em>Flags</em>`; stage = 'Stage 4'; sub = 'Forensic checks. ANY tripped flag rejects the ticker.';
+    gates = REDFLAG_GATES.map(g => ({ ...g, group: 'Forensic' }));
+    ynGates = REDFLAG_YN_GATES;
+  } else if (tab === 'momentum') {
+    title = `<em>Momentum</em> screen`; stage = 'Stage 3M'; sub = 'Price-based confirmation. Six trend signals — requires N passes (per profile). Auto-fetched from daily price history; analyst-driven fields default to neutral.';
+    gates = MOMENTUM_GATES.map(g => ({ ...g, group: 'Momentum' }));
+  } else if (tab === 'scenario') {
+    return renderScenario();
+  }
+
+  const allGates = [...gates, ...ynGates];
+
+  const head = `
+    <tr>
+      <th class="idx"></th>
+      <th class="left">Ticker</th>
+      <th class="left">Name</th>
+      ${allGates.map(g => {
+        const def = defFor(g.metric) || g.label;
+        return `<th title="${safeText(def)}">${safeText(g.label)}</th>`;
+      }).join('')}
+      <th title="Number of gates that passed out of those with usable data.">Passes</th>
+      ${tab === 'valuation' ? `<th title="${safeText(defFor('mos_min'))}">MoS</th><th title="Does Margin of Safety meet the profile threshold?">MoS OK</th>` : ''}
+      <th title="PASS if every evaluable gate cleared; FAIL otherwise.">Verdict</th>
+    </tr>`;
+
+  const body = state.tickers.length ? state.tickers.map((t, idx) => {
+    let evaluated;
+    if (tab === 'quality') evaluated = [...evalUniverse(t), ...evalQuality(t)];
+    else if (tab === 'valuation') evaluated = evalValuation(t);
+    else if (tab === 'momentum') evaluated = evalMomentum(t);
+    else if (tab === 'redflags') evaluated = evalRedFlags(t);
+
+    const cells = evaluated.map(g => gateCell(g)).join('');
+    const total = evaluated.length;
+    const passes = passCount(evaluated);
+    const ev = totalEvaluable(evaluated);
+    let verdict;
+    let passText = ev === 0 ? '<span class="dim">—</span>' : `${passes}/${total}`;
+    let mosCells = '';
+    if (tab === 'valuation') {
+      const v = valuationResult(t);
+      verdict = v.result;
+      const mos = v.mos;
+      const mosOk = v.mosOk;
+      mosCells = `
+        <td class="numeric ${mos===null?'dim':''}">${mos===null?'—':fmt(mos,'pct')}</td>
+        <td>${mosOk===null?pillFor(null):mosOk?pillFor('PASS'):pillFor('FAIL')}</td>`;
+    } else if (tab === 'momentum') {
+      verdict = momentumResult(t).result;
+    } else {
+      verdict = ev === 0 ? null : (passes === ev ? 'PASS' : 'FAIL');
+    }
+    return `<tr>
+      <td class="idx">${idx+1}</td>
+      ${tickerCell(t)}
+      <td class="left dim">${safeText(t.name || '')}</td>
+      ${cells}
+      <td class="numeric">${passText}</td>
+      ${mosCells}
+      <td>${pillFor(verdict)}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="${5 + allGates.length + (tab==='valuation'?2:0)}" class="empty-state"><div class="title">No tickers</div>Add rows on the Inputs tab.</td></tr>`;
+
+  // Summary stat strip
+  const sums = state.tickers.map(t => {
+    if (tab === 'quality') {
+      const arr = [...evalUniverse(t), ...evalQuality(t)];
+      return { ev: totalEvaluable(arr), res: stageResult(arr) };
+    }
+    if (tab === 'valuation') {
+      const v = valuationResult(t);
+      return { ev: totalEvaluable(evalValuation(t)), res: v.result };
+    }
+    if (tab === 'momentum') {
+      const m = momentumResult(t);
+      return { ev: totalEvaluable(evalMomentum(t)), res: m.result };
+    }
+    if (tab === 'redflags') {
+      const arr = evalRedFlags(t);
+      return { ev: totalEvaluable(arr), res: stageResult(arr) };
+    }
+  });
+  const evaluatedCount = sums.filter(s => s && s.ev > 0).length;
+  const passCt = sums.filter(s => s && s.res === 'PASS').length;
+  const failCt = sums.filter(s => s && s.res === 'FAIL').length;
+
+  root.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="stage">${stage}</div>
+        <h2>${title}</h2>
+        <p>${sub}</p>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="k">Tickers</div><div class="v mono">${state.tickers.length}</div></div>
+      <div class="stat"><div class="k">Evaluable</div><div class="v mono">${evaluatedCount}</div></div>
+      <div class="stat"><div class="k">Passing</div><div class="v mono pass">${passCt}</div></div>
+      <div class="stat"><div class="k">Failing</div><div class="v mono fail">${failCt}</div></div>
+      <div class="stat"><div class="k">Profile</div><div class="v"><em>${state.profile}</em></div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>${head}</thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// =============================================================================
+// RENDERING — Scenario
+// =============================================================================
+
+function renderScenario() {
+  const root = $('#panel-scenario');
+  const eirrThrDef = defFor('eirr_min');
+  const head = `
+    <tr>
+      <th class="idx"></th>
+      <th class="left">Ticker</th>
+      <th class="left">Name</th>
+      <th title="${safeText(METRIC_DEFINITIONS.bull_irr)}">Bull IRR</th><th title="${safeText(METRIC_DEFINITIONS.bull_p)}">Bull P</th>
+      <th title="${safeText(METRIC_DEFINITIONS.base_irr)}">Base IRR</th><th title="${safeText(METRIC_DEFINITIONS.base_p)}">Base P</th>
+      <th title="${safeText(METRIC_DEFINITIONS.bear_irr)}">Bear IRR</th><th title="${safeText(METRIC_DEFINITIONS.bear_p)}">Bear P</th>
+      <th title="Sum of bull/base/bear probabilities. Must equal 100%.">Σ P</th>
+      <th title="Probability-weighted Expected IRR = Σ (IRR × P).">E[IRR]</th>
+      <th title="${safeText(eirrThrDef)}">vs. threshold</th>
+      <th title="PASS if E[IRR] meets the minimum threshold for the active profile.">Verdict</th>
+    </tr>`;
+
+  const body = state.tickers.length ? state.tickers.map((t, idx) => {
+    const eirr = expectedIRR(t);
+    const thr = activeThreshold('eirr_min');
+    const verdict = eirr === null ? null : (eirr === 'P≠100%' ? 'FAIL' : (eirr >= thr ? 'PASS' : 'FAIL'));
+    const ps = [parseNumber(t.bull_p), parseNumber(t.base_p), parseNumber(t.bear_p)];
+    const sumP = ps.every(p => p !== null) ? ps.reduce((a,b)=>a+b,0) : null;
+    const sumPOk = sumP !== null && Math.abs(sumP - 100) <= 1;
+    const eirrText = eirr === null ? '—' : (eirr === 'P≠100%' ? '<span class="pill fail">Σ P ≠ 100%</span>' : fmt(eirr, 'pct'));
+    const cellTip = (label, v, fmtType) => {
+      const def = METRIC_DEFINITIONS[label] || '';
+      const actual = (v === null || v === undefined) ? 'n/a' : fmt(v, fmtType);
+      return safeText(`${def}\n\nActual: ${actual}`);
+    };
+    const sumPTip = safeText(`Sum of bull/base/bear probabilities. Must equal 100%.\n\nActual: ${sumP === null ? 'n/a' : fmt(sumP, 'pct0')}\nRequired: 100%`);
+    const eirrTip = safeText(`Probability-weighted Expected IRR.\n\nActual: ${eirr === null || eirr === 'P≠100%' ? 'n/a' : fmt(eirr, 'pct')}\nRequired: ≥ ${fmt(thr, 'pct')}`);
+    return `<tr>
+      <td class="idx">${idx+1}</td>
+      ${tickerCell(t)}
+      <td class="left dim">${safeText(t.name || '')}</td>
+      <td class="numeric" title="${cellTip('bull_irr', t.bull_irr, 'pct')}">${t.bull_irr===null||t.bull_irr===undefined?'—':fmt(t.bull_irr,'pct')}</td>
+      <td class="numeric dim" title="${cellTip('bull_p', t.bull_p, 'pct0')}">${t.bull_p===null||t.bull_p===undefined?'—':fmt(t.bull_p,'pct0')}</td>
+      <td class="numeric" title="${cellTip('base_irr', t.base_irr, 'pct')}">${t.base_irr===null||t.base_irr===undefined?'—':fmt(t.base_irr,'pct')}</td>
+      <td class="numeric dim" title="${cellTip('base_p', t.base_p, 'pct0')}">${t.base_p===null||t.base_p===undefined?'—':fmt(t.base_p,'pct0')}</td>
+      <td class="numeric" title="${cellTip('bear_irr', t.bear_irr, 'pct')}">${t.bear_irr===null||t.bear_irr===undefined?'—':fmt(t.bear_irr,'pct')}</td>
+      <td class="numeric dim" title="${cellTip('bear_p', t.bear_p, 'pct0')}">${t.bear_p===null||t.bear_p===undefined?'—':fmt(t.bear_p,'pct0')}</td>
+      <td class="numeric ${sumP===null?'dim':(sumPOk?'':'')}" ${sumP!==null&&!sumPOk?'style="color:var(--fail)"':''} title="${sumPTip}">${sumP===null?'—':fmt(sumP,'pct0')}</td>
+      <td class="numeric" style="font-weight:500" title="${eirrTip}">${eirrText}</td>
+      <td class="numeric dim">${'≥ ' + fmt(thr,'pct')}</td>
+      <td>${pillFor(verdict)}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="13" class="empty-state"><div class="title">No tickers</div>Add rows on the Inputs tab.</td></tr>`;
+
+  const evaluated = state.tickers.filter(t => expectedIRR(t) !== null && expectedIRR(t) !== 'P≠100%');
+  const passing = evaluated.filter(t => expectedIRR(t) >= activeThreshold('eirr_min'));
+  const avgEirr = evaluated.length ? evaluated.reduce((s,t) => s + expectedIRR(t), 0) / evaluated.length : null;
+
+  root.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="stage">Stage 5</div>
+        <h2><em>Scenario</em> & expected IRR</h2>
+        <p>Probability-weighted expected IRR over a 3–5 year horizon. Probabilities must sum to 100%. Verdict gates on the minimum E[IRR] threshold from the active profile.</p>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="k">Tickers</div><div class="v mono">${state.tickers.length}</div></div>
+      <div class="stat"><div class="k">Evaluable</div><div class="v mono">${evaluated.length}</div></div>
+      <div class="stat"><div class="k">Passing</div><div class="v mono pass">${passing.length}</div></div>
+      <div class="stat"><div class="k">Avg E[IRR]</div><div class="v mono">${avgEirr===null?'—':fmt(avgEirr,'pct')}</div></div>
+      <div class="stat"><div class="k">Threshold</div><div class="v mono">${fmt(activeThreshold('eirr_min'),'pct')}</div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table><thead>${head}</thead><tbody>${body}</tbody></table>
+      </div>
+    </div>`;
+}
+
+// =============================================================================
+// RENDERING — Summary
+// =============================================================================
+
+function renderSummary() {
+  const root = $('#panel-summary');
+  const activeStages = schoolStages();
+  const STAGE_LABEL = { universe: 'Univ', quality: 'Quality', valuation: 'Valuation', momentum: 'Momentum', redflags: 'Red Flags', scenario: 'Scenario' };
+  const STAGE_TIP = {
+    universe:  'Universe filters (market cap, liquidity). PASS = tradeable at your size.',
+    quality:   'Quality gates (profitability, balance sheet, capital allocation, durability). PASS = every evaluable gate cleared.',
+    valuation: 'Valuation gates plus Margin of Safety. PASS = ≥N criteria cleared AND MoS meets profile threshold.',
+    momentum:  'Momentum gates (12-1m, 6m, 52w distance, 200d MA, RS, EPS revisions). PASS = ≥N of 6 cleared.',
+    redflags:  'Forensic red flags (accruals, accounting quality, insider activity). PASS = nothing tripped.',
+    scenario:  'Probability-weighted Expected IRR clears the minimum return threshold.',
+  };
+
+  const stageHeaders = activeStages.map(s =>
+    `<th title="${safeText(STAGE_TIP[s] || '')}">${STAGE_LABEL[s]}</th>`).join('');
+
+  const head = `
+    <tr>
+      <th class="idx"></th>
+      <th class="left">Ticker</th>
+      <th class="left">Name</th>
+      <th class="left">Sector</th>
+      ${stageHeaders}
+      <th title="Count of stages passed out of those with enough data to evaluate.">Stages</th>
+      <th title="Overall verdict. BUY = all stages passed. WATCH = all but one. REJECT = fewer.">Verdict</th>
+      <th title="Probability-weighted Expected IRR (3–5 year horizon).">E[IRR]</th>
+      <th title="${safeText(CRITERION_EXTRA_DEFS.mos_min)}">MoS</th>
+      <th class="left" title="${safeText(METRIC_DEFINITIONS.moat)}">Moat</th>
+    </tr>`;
+
+  const rows = state.tickers.map((t, idx) => {
+    const s = summarize(t);
+    return { t, idx, s };
+  });
+  // Sort: BUY first, then WATCH, then REJECT, then null. Within each, by E[IRR] desc.
+  rows.sort((a, b) => {
+    const rank = v => v === 'BUY' ? 0 : v === 'WATCH' ? 1 : v === 'REJECT' ? 2 : 3;
+    const r = rank(a.s.overall) - rank(b.s.overall);
+    if (r !== 0) return r;
+    const ea = a.s.eirr, eb = b.s.eirr;
+    const na = (ea === null || ea === 'P≠100%') ? -Infinity : ea;
+    const nb = (eb === null || eb === 'P≠100%') ? -Infinity : eb;
+    return nb - na;
+  });
+
+  const body = rows.length ? rows.map(({ t, idx, s }) => {
+    const cellFor = res => res === null ? `<td>${pillFor(null)}</td>` : `<td>${pillFor(res)}</td>`;
+    const stageCells = activeStages.map(name => cellFor(s.stageResults[name])).join('');
+    return `<tr>
+      <td class="idx">${idx+1}</td>
+      ${tickerCell(t)}
+      <td class="left dim">${safeText(t.name || '')}</td>
+      <td class="left dim">${safeText(t.sector || '')}</td>
+      ${stageCells}
+      <td class="numeric">${s.stagesEval === 0 ? '<span class="dim">—</span>' : `${s.stagesPassed}/${s.stagesEval}`}</td>
+      <td>${pillFor(s.overall)}</td>
+      <td class="numeric">${s.eirr===null||s.eirr==='P≠100%'?'—':fmt(s.eirr,'pct')}</td>
+      <td class="numeric">${s.val.mos===null?'—':fmt(s.val.mos,'pct')}</td>
+      <td class="left dim">${safeText(t.moat || '')}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="${9 + activeStages.length}" class="empty-state"><div class="title">No tickers</div>Add rows on the Inputs tab.</td></tr>`;
+
+  const buys = rows.filter(r => r.s.overall === 'BUY').length;
+  const watches = rows.filter(r => r.s.overall === 'WATCH').length;
+  const rejects = rows.filter(r => r.s.overall === 'REJECT').length;
+
+  root.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="stage">${activeStages.length} stages · ${state.school}</div>
+        <h2><em>Summary</em> & verdicts</h2>
+        <p>Final stage pass/fail and overall verdict. BUY = passes all stages, WATCH = all but one, REJECT = fewer.</p>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="k">Tickers</div><div class="v mono">${state.tickers.length}</div></div>
+      <div class="stat"><div class="k">Buy</div><div class="v mono pass">${buys}</div></div>
+      <div class="stat"><div class="k">Watch</div><div class="v mono" style="color:var(--warn)">${watches}</div></div>
+      <div class="stat"><div class="k">Reject</div><div class="v mono fail">${rejects}</div></div>
+      <div class="stat"><div class="k">School</div><div class="v"><em>${state.school}</em></div></div>
+      <div class="stat"><div class="k">Profile</div><div class="v"><em>${state.profile}</em></div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table><thead>${head}</thead><tbody>${body}</tbody></table>
+      </div>
+    </div>`;
+}
+
+// =============================================================================
+// RENDERING — Portfolio
+// =============================================================================
+
+function renderPortfolio() {
+  const root = $('#panel-portfolio');
+  const maxPos = activeThreshold('maxpos');
+  const kellyMult = activeThreshold('kelly_mult');
+  const target = activeThreshold('target_holdings');
+
+  const head = `
+    <tr>
+      <th class="idx"></th>
+      <th class="left">Ticker</th>
+      <th title="Overall verdict from the Summary panel.">Verdict</th>
+      <th title="Probability-weighted Expected IRR (3–5y horizon).">E[IRR]</th>
+      <th title="Win probability = sum of probabilities assigned to scenarios with positive IRR.">Win P</th>
+      <th title="Win/Loss ratio = expected positive IRR divided by absolute expected negative IRR. Higher = better asymmetric payoff.">Win/Loss</th>
+      <th title="Full Kelly fraction = (p·b − (1−p)) / b, where p = win probability and b = win/loss ratio. The mathematically optimal bet size — usually too aggressive in practice.">Kelly f*</th>
+      <th title="Adjusted Kelly = full Kelly × Kelly multiplier from active profile (typically 0.5 for half-Kelly). The dampened, practical sizing.">Adj. Kelly</th>
+      <th title="${safeText(CRITERION_EXTRA_DEFS.maxpos)}">Cap</th>
+      <th title="Suggested position size = min(Adjusted Kelly, position cap). Zero if not rated BUY.">Suggested</th>
+      <th class="left">Sector</th>
+    </tr>`;
+
+  const rows = state.tickers.map((t, idx) => {
+    const s = summarize(t);
+    const ws = winStats(t);
+    const kf = kellyFraction(t);
+    const adj = kf === null ? null : kf * kellyMult * 100; // kelly is fraction (0..1), adj is also fraction but we want pct display; convert to percent
+    const cap = maxPos;
+    const suggested = (s.overall === 'BUY' && adj !== null) ? Math.min(adj, cap) : 0;
+    return { t, idx, s, ws, kf, adj, cap, suggested };
+  });
+
+  // Sort BUY first, then by suggested desc
+  rows.sort((a, b) => {
+    const rank = v => v === 'BUY' ? 0 : v === 'WATCH' ? 1 : v === 'REJECT' ? 2 : 3;
+    const r = rank(a.s.overall) - rank(b.s.overall);
+    if (r !== 0) return r;
+    return b.suggested - a.suggested;
+  });
+
+  const totalSuggested = rows.reduce((s, r) => s + r.suggested, 0);
+  const sectorMix = {};
+  rows.forEach(r => {
+    if (r.suggested > 0) {
+      const sec = r.t.sector || 'Unclassified';
+      sectorMix[sec] = (sectorMix[sec] || 0) + r.suggested;
+    }
+  });
+  const sectorList = Object.entries(sectorMix).sort((a,b)=>b[1]-a[1]);
+
+  const body = rows.length ? rows.map(({ t, idx, s, ws, kf, adj, cap, suggested }) => `
+    <tr ${suggested > 0 ? 'style="background:var(--pass-soft)"' : ''}>
+      <td class="idx">${idx+1}</td>
+      ${tickerCell(t)}
+      <td>${pillFor(s.overall)}</td>
+      <td class="numeric">${s.eirr===null||s.eirr==='P≠100%'?'—':fmt(s.eirr,'pct')}</td>
+      <td class="numeric">${ws===null?'—':fmt(ws.p*100,'pct0')}</td>
+      <td class="numeric">${ws===null?'—':fmt(ws.b,'n2')}</td>
+      <td class="numeric">${kf===null?'—':fmt(kf*100,'pct')}</td>
+      <td class="numeric">${adj===null?'—':fmt(adj,'pct')}</td>
+      <td class="numeric dim">${fmt(cap,'pct')}</td>
+      <td class="numeric" style="font-weight:600">${suggested>0?fmt(suggested,'pct'):'<span class="dim">—</span>'}</td>
+      <td class="left dim">${safeText(t.sector || '')}</td>
+    </tr>`).join('') : `<tr><td colspan="11" class="empty-state"><div class="title">No tickers</div>Add rows on the Inputs tab.</td></tr>`;
+
+  const namesWithWeight = rows.filter(r => r.suggested > 0).length;
+
+  root.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="stage">Stage 6</div>
+        <h2><em>Portfolio</em> construction</h2>
+        <p>Half-Kelly position sizing for BUY-rated names, capped by profile maximum and ADV liquidity. Sum of suggested weights tells you how much dry powder remains.</p>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="k">Buy names</div><div class="v mono pass">${namesWithWeight}</div></div>
+      <div class="stat"><div class="k">Target holdings</div><div class="v mono">${target}</div></div>
+      <div class="stat"><div class="k">Suggested total</div><div class="v mono">${fmt(totalSuggested,'pct')}</div></div>
+      <div class="stat"><div class="k">Cash buffer</div><div class="v mono">${fmt(Math.max(0, 100 - totalSuggested),'pct')}</div></div>
+      <div class="stat"><div class="k">Kelly × ${fmt(kellyMult,'n2')}</div><div class="v"><em>${state.profile}</em></div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table><thead>${head}</thead><tbody>${body}</tbody></table>
+      </div>
+    </div>
+    ${sectorList.length ? `
+    <div class="card">
+      <div class="card-title-row">
+        <div>
+          <div class="kicker">Sector allocation</div>
+          <div class="title"><em>Concentration</em> by GICS sector</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="left">Sector</th><th>Weight</th><th>vs. cap (${fmt(activeThreshold('maxsector'),'pct')})</th></tr></thead>
+          <tbody>
+            ${sectorList.map(([sec, w]) => {
+              const cap = activeThreshold('maxsector');
+              const over = w > cap;
+              return `<tr><td class="left">${safeText(sec)}</td><td class="numeric">${fmt(w,'pct')}</td><td>${over?pillFor('FAIL'):pillFor('PASS')}</td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>` : ''}`;
+}
+
+// =============================================================================
+// RENDER ROUTING & EVENT WIRING
+// =============================================================================
+
+function renderActive() {
+  const tab = state.activeTab;
+  if (tab === 'setup') renderSetup();
+  else if (tab === 'inputs') renderInputs();
+  else if (tab === 'quality' || tab === 'valuation' || tab === 'momentum' || tab === 'redflags') renderScoring(tab);
+  else if (tab === 'scenario') renderScenario();
+  else if (tab === 'summary') renderSummary();
+  else if (tab === 'portfolio') renderPortfolio();
+}
+
+function applyTabVisibility() {
+  const active = schoolStages();
+  $$('#tabs button[data-stage]').forEach(b => {
+    b.style.display = active.includes(b.dataset.stage) ? '' : 'none';
+  });
+  // If current tab is now hidden, redirect to setup
+  const cur = document.querySelector(`#tabs button[data-tab="${state.activeTab}"]`);
+  if (cur && cur.style.display === 'none') setTab('setup');
+}
+
+function setTab(tab) {
+  // Don't navigate into a tab the active school disables
+  const btn = document.querySelector(`#tabs button[data-tab="${tab}"]`);
+  if (btn && btn.dataset.stage && !schoolStages().includes(btn.dataset.stage)) tab = 'setup';
+  state.activeTab = tab;
+  saveState();
+  $$('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  $$('section.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab}`));
+  renderActive();
+}
+
+function setTheme(theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  saveState();
+  // Update icon
+  const icon = $('#themeIcon');
+  if (theme === 'dark') {
+    icon.innerHTML = '<path d="M20 14.3A8.5 8.5 0 1 1 9.7 4a7 7 0 0 0 10.3 10.3Z"/>';
+  } else {
+    icon.innerHTML = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>';
+  }
+}
+
+function initProfileSelect() {
+  const sel = $('#profileSelect');
+  sel.innerHTML = PROFILE_NAMES.map(p => `<option value="${p}"${p===state.profile?' selected':''}>${p}</option>`).join('');
+}
+
+function initSchoolSelect() {
+  const sel = $('#schoolSelect');
+  sel.innerHTML = SCHOOL_NAMES.map(s => `<option value="${s}"${s===state.school?' selected':''}>${s}</option>`).join('');
+}
+
+function render() { renderActive(); }
+
+// =============================================================================
+// INIT
+// =============================================================================
+
+// Migrate old saved state that has no school
+if (!state.school || !SCHOOLS[state.school]) state.school = 'Quality + Value';
+
+document.documentElement.setAttribute('data-theme', state.theme);
+setTheme(state.theme);
+initSchoolSelect();
+initProfileSelect();
+applyTabVisibility();
+
+$$('#tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$('#schoolSelect').addEventListener('change', e => {
+  state.school = e.target.value;
+  saveState();
+  applyTabVisibility();
+  renderActive();
+});
+$('#profileSelect').addEventListener('change', e => {
+  state.profile = e.target.value;
+  saveState();
+  renderActive();
+});
+$('#themeToggle').addEventListener('click', () => {
+  setTheme(state.theme === 'light' ? 'dark' : 'light');
+});
+
+// Activate the saved tab
+setTab(state.activeTab);
+
+// Keyboard: cmd/ctrl+number to switch tabs (visible tabs only)
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key >= '1' && e.key <= '9') {
+    const visible = $$('#tabs button').filter(b => b.style.display !== 'none');
+    const idx = Number(e.key) - 1;
+    if (visible[idx]) { setTab(visible[idx].dataset.tab); e.preventDefault(); }
+  }
+});
+</script>
+</body>
+</html>
