@@ -98,13 +98,8 @@ body {
   font-optical-sizing: auto;
 }
 
-/* ---- App shell (full-height flex column — sectors.html & sankey.html) ----
-   The `sectors-page` class is a historical name; treat it as the "full-height
-   app shell" marker for any page that needs a non-scrolling viewport-filling
-   layout. */
+/* ---- App shell (full-height flex column — sectors.html & sankey.html) ---- */
 .full-height-page {
-  /* `100vh` (not `100%`) so we don't have to also lock `html { height:100% }`,
-     which would suppress scrolling on stocks.html (no `.sectors-page` class). */
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -195,7 +190,7 @@ header.app .brand .tag {
   border-bottom-color: var(--accent);
 }
 
-/* ---- Footer (base — overridden by .sectors-page above) ---- */
+/* ---- Footer ---- */
 footer.app {
   padding: 10px 36px;
   font-size: 11px;

@@ -10,7 +10,7 @@ nav.tabs {
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   overflow-x: auto;
   position: sticky;
-  top: 105px;
+  top: 76px;
   z-index: 40;
   backdrop-filter: saturate(160%) blur(8px);
   -webkit-backdrop-filter: saturate(160%) blur(8px);
@@ -66,7 +66,7 @@ nav.tabs .roman {
 
 /* ---- Main / panel transitions ---- */
 main {
-  padding: 28px 36px 64px;
+  padding: 28px 36px;
   max-width: 1680px;
   margin: 0 auto;
 }

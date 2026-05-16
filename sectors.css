@@ -4,7 +4,7 @@
 
 /* ---- Card layout: card is a flex column hosting [thead, body, tfoot] inside
    a single scroll region. Header/footer pin to top/bottom via position:sticky. */
-.sectors-page main.sectors-main > .card {
+main.sectors-main > .card {
   flex: 1 1 auto;
   min-height: 0;
   margin-bottom: 0;
