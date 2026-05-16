@@ -3,17 +3,17 @@
 // =============================================================================
 
 const SECTORS = [
-    {name: 'Technology', etf: 'XLK', tickers: ['NVDA', 'AAPL', 'MSFT']},
-    {name: 'Communication Services', etf: 'XLC', tickers: ['GOOGL', 'META', 'NFLX']},
-    {name: 'Financials', etf: 'XLF', tickers: ['BRK.B', 'JPM', 'V']},
-    {name: 'Health Care', etf: 'XLV', tickers: ['LLY', 'UNH', 'JNJ']},
-    {name: 'Consumer Discretionary', etf: 'XLY', tickers: ['AMZN', 'TSLA', 'HD']},
-    {name: 'Consumer Staples', etf: 'XLP', tickers: ['WMT', 'COST', 'PG']},
-    {name: 'Energy', etf: 'XLE', tickers: ['XOM', 'CVX', 'COP']},
-    {name: 'Industrials', etf: 'XLI', tickers: ['GE', 'RTX', 'CAT']},
-    {name: 'Materials', etf: 'XLB', tickers: ['LIN', 'SHW', 'ECL']},
-    {name: 'Real Estate', etf: 'XLRE', tickers: ['PLD', 'AMT', 'EQIX']},
-    {name: 'Utilities', etf: 'XLU', tickers: ['NEE', 'SO', 'DUK']}
+    {name: 'Technology', etf: 'XLK', tickers: ['NVDA', 'AAPL', 'MSFT', 'AVGO', 'ORCL', 'CRM', 'CSCO']},
+    {name: 'Communication Services', etf: 'XLC', tickers: ['GOOGL', 'META', 'NFLX', 'TMUS', 'DIS', 'T', 'CMCSA']},
+    {name: 'Financials', etf: 'XLF', tickers: ['BRK.B', 'JPM', 'V', 'MA', 'BAC', 'WFC', 'GS']},
+    {name: 'Health Care', etf: 'XLV', tickers: ['LLY', 'UNH', 'JNJ', 'ABBV', 'MRK', 'ABT', 'TMO']},
+    {name: 'Consumer Discretionary', etf: 'XLY', tickers: ['AMZN', 'TSLA', 'HD', 'MCD', 'LOW', 'BKNG', 'TJX']},
+    {name: 'Consumer Staples', etf: 'XLP', tickers: ['WMT', 'COST', 'PG', 'KO', 'PEP', 'PM', 'MO']},
+    {name: 'Energy', etf: 'XLE', tickers: ['XOM', 'CVX', 'COP', 'EOG', 'MPC', 'PSX', 'SLB']},
+    {name: 'Industrials', etf: 'XLI', tickers: ['GE', 'RTX', 'CAT', 'BA', 'HON', 'UBER', 'UNP']},
+    {name: 'Materials', etf: 'XLB', tickers: ['LIN', 'SHW', 'ECL', 'FCX', 'APD', 'NEM', 'DD']},
+    {name: 'Real Estate', etf: 'XLRE', tickers: ['PLD', 'AMT', 'EQIX', 'WELL', 'SPG', 'PSA', 'CCI']},
+    {name: 'Utilities', etf: 'XLU', tickers: ['NEE', 'SO', 'DUK', 'CEG', 'SRE', 'AEP', 'D']}
 ];
 
 // =============================================================================
