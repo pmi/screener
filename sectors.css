@@ -4,7 +4,7 @@
 
 /* ---- Card layout: card is a flex column hosting [thead, body, tfoot] inside
    a single scroll region. Header/footer pin to top/bottom via position:sticky. */
-.sankey-page main.sectors-main > .card {
+.sectors-page main.sectors-main > .card {
   flex: 1 1 auto;
   min-height: 0;
   margin-bottom: 0;
@@ -12,7 +12,7 @@
   flex-direction: column;
 }
 
-.sankey-scroller {
+.sectors-scroller {
   flex: 1 1 auto;
   overflow: auto;
   min-height: 0;
@@ -20,17 +20,17 @@
 }
 
 /* The body holds only the lanes SVG; height grows past the scroller's height
-   so the scroll behaviour is provided by .sankey-scroller. */
-.sankey-body {
+   so the scroll behaviour is provided by .sectors-scroller. */
+.sectors-body {
   position: relative;
 }
 
-.sankey-body > svg {
+.sectors-body > svg {
   display: block;
 }
 
 /* ---- thead / tfoot — sticky header & footer aligned to body's column grid ---- */
-.sankey-thead, .sankey-tfoot {
+.sectors-thead, .sectors-tfoot {
   display: grid;
   /* 170px gutter mirrors the body SVG's `marginLeft` (sector-label area) so
      each of the 12 month columns lines up with the corresponding lane column. */
@@ -40,17 +40,17 @@
   z-index: 2;
 }
 
-.sankey-thead {
+.sectors-thead {
   top: 0;
   border-bottom: 1px solid var(--border-strong);
 }
 
-.sankey-tfoot {
+.sectors-tfoot {
   bottom: 0;
   border-top: 1px solid var(--border-strong);
 }
 
-.sankey-thead .cell, .sankey-tfoot .cell {
+.sectors-thead .cell, .sectors-tfoot .cell {
   padding: 10px 4px;
   text-align: center;
   white-space: nowrap;
@@ -142,7 +142,7 @@
 }
 
 /* ---- Empty state ---- */
-.sankey-body .empty {
+.sectors-body .empty {
   position: absolute;
   inset: 0;
   display: grid;
@@ -153,7 +153,7 @@
   padding: 24px;
 }
 
-.sankey-body .empty a {
+.sectors-body .empty a {
   color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid currentColor;

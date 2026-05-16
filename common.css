@@ -102,34 +102,13 @@ body {
    The `sectors-page` class is a historical name; treat it as the "full-height
    app shell" marker for any page that needs a non-scrolling viewport-filling
    layout. */
-body.sectors-page {
+.full-height-page {
   /* `100vh` (not `100%`) so we don't have to also lock `html { height:100% }`,
      which would suppress scrolling on stocks.html (no `.sectors-page` class). */
   height: 100vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-
-.sectors-page header.app {
-  flex: 0 0 auto;
-}
-
-.sectors-page footer.app {
-  flex: 0 0 auto;
-  font-size: 11px;
-  color: var(--text-muted);
-  letter-spacing: .02em;
-  padding: 10px 36px;
-  border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.sectors-page footer.app .rule {
-  display: none;
 }
 
 /* Brand area lays out the title + optional inline header link side by side. */
@@ -218,29 +197,21 @@ header.app .brand .tag {
 
 /* ---- Footer (base — overridden by .sectors-page above) ---- */
 footer.app {
-  padding: 32px 36px;
-  color: var(--text-faint);
+  padding: 10px 36px;
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   border-top: 1px solid var(--border);
-  margin-top: 40px;
   text-align: center;
+  color: var(--text-muted);
 }
 
-footer.app .rule {
-  width: 60px;
-  height: 1px;
-  background: var(--accent);
-  margin: 0 auto 14px;
-}
-
-/* ---- Pills (profile-pill, key-pill) ---- */
+/* ---- Pills (profile-pill) ---- */
 .profile-pill {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 6px 8px 16px;
+  padding: 6px 6px 6px 16px;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   background: var(--surface);
@@ -285,12 +256,7 @@ footer.app .rule {
   opacity: .6;
 }
 
-/* AV-key entry pill (used by sectors / sankey pages). */
-.profile-pill.key-pill {
-  padding: 4px 6px 4px 16px;
-}
-
-.key-pill input {
+.profile-pill input {
   appearance: none;
   border: none;
   background: var(--surface-2);
@@ -303,7 +269,7 @@ footer.app .rule {
   outline: none;
 }
 
-.key-pill input:focus {
+.profile-pill input:focus {
   background: var(--input-bg);
   box-shadow: inset 0 0 0 1px var(--border-strong);
 }
@@ -323,6 +289,40 @@ footer.app .rule {
 .fetch-bar label a:hover {
   color: var(--accent);
   text-decoration-color: var(--accent);
+}
+
+/* ---- Segmented buttons inside profile-pill (window selector) ---- */
+.profile-pill .segmented-buttons {
+  display: flex;
+  gap: 2px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.profile-pill .segmented-buttons button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: .04em;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+
+.profile-pill .segmented-buttons button:hover {
+  color: var(--text);
+}
+
+.profile-pill .segmented-buttons button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
 }
 
 /* SVG counterpart of the inline link styling above — sankey's lane labels.

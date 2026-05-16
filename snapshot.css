@@ -1,44 +1,6 @@
 /* snapshot.css — treemap-specific styling. App-shell layout (incl.
-   `main.sectors-main`), status strip, key-pill, header-link, and brand-flex
+   `main.sectors-main`), status strip, header-link, and brand-flex
    are in common.css. */
-
-/* ---- Segmented buttons inside profile-pill (window selector) ---- */
-.profile-pill.segmented {
-  padding: 6px 6px 6px 16px;
-}
-
-.segmented-buttons {
-  display: flex;
-  gap: 2px;
-  background: var(--surface-2);
-  border-radius: 999px;
-  padding: 2px;
-}
-
-.segmented-buttons button {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  font-size: 12px;
-  letter-spacing: .04em;
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background .18s ease, color .18s ease;
-}
-
-.segmented-buttons button:hover {
-  color: var(--text);
-}
-
-.segmented-buttons button.active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow);
-}
 
 /* ---- Treemap grid ---- */
 .sector-grid {

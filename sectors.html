@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="sectors.css">
 </head>
-<body class="sectors-page sankey-page">
+<body class="sectors-page full-height-page">
 
 <header class="app">
     <div class="brand">
         <h1><em>Sector Screener</em> v1</h1>
-        <a href="stocks.html" class="header-link" title="Open the per-ticker stock screener">Stock screener →</a>
+        <a href="stocks.html" class="header-link" title="Open the per-ticker stock screener">Stock screener</a>
     </div>
     <div class="header-right">
-        <div class="profile-pill key-pill">
+        <div class="profile-pill">
             <label><a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener"
                       title="Get a free Alpha Vantage API key">AV key</a></label>
             <input id="avKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="paste key">
@@ -45,18 +45,16 @@
 <main class="sectors-main">
     <div id="status" class="status-strip" hidden></div>
     <div class="card">
-        <div class="sankey-scroller" id="sankeyScroller" role="region" aria-label="12-month sector flow timeline">
-            <div class="sankey-thead" id="sankeyThead"></div>
-            <div class="sankey-body" id="chartHost"></div>
-            <div class="sankey-tfoot" id="sankeyTfoot"></div>
+        <div class="sectors-scroller" id="sankeyScroller" role="region" aria-label="12-month sector flow timeline">
+            <div class="sectors-thead" id="sankeyThead"></div>
+            <div class="sectors-body" id="chartHost"></div>
+            <div class="sectors-tfoot" id="sankeyTfoot"></div>
         </div>
     </div>
 </main>
 
 <footer class="app">
-    <div class="rule"></div>
-    12 monthly bars per sector · positive flow (up months) above center, negative below · same data as <a
-        href="snapshot.html">/snapshot.html</a>
+    12 monthly bars per sector · positive flow (up months) above center, negative below
 </footer>
 
 <script src="sectors.js"></script>

@@ -10,7 +10,7 @@ nav.tabs {
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   overflow-x: auto;
   position: sticky;
-  top: 80px;
+  top: 105px;
   z-index: 40;
   backdrop-filter: saturate(160%) blur(8px);
   -webkit-backdrop-filter: saturate(160%) blur(8px);

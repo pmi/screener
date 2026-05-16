@@ -11,13 +11,13 @@
     <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="snapshot.css">
 </head>
-<body class="sectors-page">
+<body class="sectors-page full-height-page">
 
 <header class="app">
     <div class="brand">
         <h1><em>Sector Snapshot</em> v1</h1>
-        <a href="sectors.html" class="header-link" title="Back to the 12-month sector timeline">← Sector screener</a>
-        <a href="stocks.html" class="header-link" title="Open the per-ticker stock screener">Stock screener →</a>
+        <a href="sectors.html" class="header-link" title="Back to the 12-month sector timeline">Sector screener</a>
+        <a href="stocks.html" class="header-link" title="Open the per-ticker stock screener">Stock screener</a>
     </div>
     <div class="header-right">
         <div class="profile-pill segmented" role="tablist" aria-label="Time window">
@@ -29,7 +29,7 @@
                 <button type="button" data-window="12">12M</button>
             </div>
         </div>
-        <div class="profile-pill key-pill">
+        <div class="profile-pill">
             <label><a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener"
                       title="Get a free Alpha Vantage API key">AV key</a></label>
             <input id="avKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="paste key">
@@ -58,9 +58,7 @@
 </main>
 
 <footer class="app">
-    <div class="rule"></div>
-    Net buying pressure proxy · Σ(close × volume) on up months − down months · Sector ETFs via Alpha Vantage · view as <a
-        href="sectors.html">timeline</a>
+    Net buying pressure proxy · Σ(close × volume) on up months − down months · Sector ETFs via Alpha Vantage
 </footer>
 
 <script src="snapshot.js"></script>
