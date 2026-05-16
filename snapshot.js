@@ -535,6 +535,10 @@ function renderGrid() {
         el.style.top = y + 'px';
         el.style.width = w + 'px';
         el.style.height = h + 'px';
+        // `--cell-scale` is the cell's area in thousands of square pixels — used
+        // by snapshot.css so font sizes scale with area (≈ net in/out magnitude)
+        // instead of just cell width.
+        el.style.setProperty('--cell-scale', `${(w * h) / 1000}px`);
 
         let flow = 'na';
         if (cell.error) {

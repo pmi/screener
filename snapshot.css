@@ -70,7 +70,9 @@
   font-optical-sizing: auto;
   font-variation-settings: "opsz" 144;
   font-weight: 500;
-  font-size: clamp(13px, 9cqi, 44px);
+  /* Font scales with `--cell-scale` (cell area / 1000) so a sector with 4× the
+     net-flow magnitude gets 4× the type size (clamped). Set by snapshot.js. */
+  font-size: clamp(13px, calc(var(--cell-scale) * 0.3), 44px);
   letter-spacing: -.01em;
   line-height: 1.1;
   color: var(--text);
@@ -78,7 +80,7 @@
 
 .sector-cell .sector-etf {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: clamp(10px, 3.5cqi, 18px);
+  font-size: clamp(10px, calc(var(--cell-scale) * 0.14), 18px);
   letter-spacing: .04em;
 }
 
@@ -102,7 +104,7 @@
 .sector-cell .sector-value {
   font-family: 'IBM Plex Mono', monospace;
   font-variant-numeric: tabular-nums;
-  font-size: clamp(11px, 6cqi, 30px);
+  font-size: clamp(11px, calc(var(--cell-scale) * 0.22), 30px);
   font-weight: 500;
   color: var(--text);
   line-height: 1.15;
@@ -119,7 +121,7 @@
 .sector-cell .sector-delta {
   font-family: 'IBM Plex Mono', monospace;
   font-variant-numeric: tabular-nums;
-  font-size: clamp(10px, 3.5cqi, 18px);
+  font-size: clamp(10px, calc(var(--cell-scale) * 0.14), 18px);
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -132,7 +134,7 @@
   flex-wrap: wrap;
   gap: clamp(4px, 1.2cqi, 10px) clamp(8px, 2.4cqi, 18px);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: clamp(10px, 3.5cqi, 18px);
+  font-size: clamp(10px, calc(var(--cell-scale) * 0.14), 18px);
   letter-spacing: .04em;
 }
 
